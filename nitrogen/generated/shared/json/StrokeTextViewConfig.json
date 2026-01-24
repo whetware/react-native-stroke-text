@@ -1,0 +1,32 @@
+{
+  "uiViewClassName": "StrokeTextView",
+  "supportsRawText": false,
+  "bubblingEventTypes": {},
+  "directEventTypes": {},
+  "validAttributes": {
+    "text": true,
+    "color": true,
+    "strokeColor": true,
+    "strokeWidth": true,
+    "fontSize": true,
+    "fontWeight": true,
+    "fontFamily": true,
+    "fontStyle": true,
+    "lineHeight": true,
+    "letterSpacing": true,
+    "textAlign": true,
+    "textDecorationLine": true,
+    "textTransform": true,
+    "opacity": true,
+    "numberOfLines": true,
+    "ellipsis": true,
+    "padding": true,
+    "paddingVertical": true,
+    "paddingHorizontal": true,
+    "paddingTop": true,
+    "paddingRight": true,
+    "paddingBottom": true,
+    "paddingLeft": true,
+    "hybridRef": true
+  }
+}
