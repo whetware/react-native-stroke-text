@@ -61,6 +61,9 @@ namespace margelo::nitro::stroketext::views {
     CachedProp<std::optional<StrokeTextDecorationLine>> textDecorationLine;
     CachedProp<std::optional<StrokeTextTransform>> textTransform;
     CachedProp<std::optional<double>> opacity;
+    CachedProp<std::optional<bool>> allowFontScaling;
+    CachedProp<std::optional<double>> maxFontSizeMultiplier;
+    CachedProp<std::optional<bool>> includeFontPadding;
     CachedProp<std::optional<double>> numberOfLines;
     CachedProp<std::optional<bool>> ellipsis;
     CachedProp<std::optional<double>> padding;

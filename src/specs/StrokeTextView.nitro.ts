@@ -31,6 +31,10 @@ export interface StrokeTextProps extends HybridViewProps {
   textTransform?: StrokeTextTransform
   opacity?: number
 
+  allowFontScaling?: boolean
+  maxFontSizeMultiplier?: number
+  includeFontPadding?: boolean
+
   numberOfLines?: number
   ellipsis?: boolean
 
@@ -46,4 +50,3 @@ export interface StrokeTextProps extends HybridViewProps {
 export interface StrokeTextMethods extends HybridViewMethods {}
 
 export type StrokeTextView = HybridView<StrokeTextProps, StrokeTextMethods>
-

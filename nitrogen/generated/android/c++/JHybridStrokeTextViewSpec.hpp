@@ -79,6 +79,12 @@ namespace margelo::nitro::stroketext {
     void setTextTransform(std::optional<StrokeTextTransform> textTransform) override;
     std::optional<double> getOpacity() override;
     void setOpacity(std::optional<double> opacity) override;
+    std::optional<bool> getAllowFontScaling() override;
+    void setAllowFontScaling(std::optional<bool> allowFontScaling) override;
+    std::optional<double> getMaxFontSizeMultiplier() override;
+    void setMaxFontSizeMultiplier(std::optional<double> maxFontSizeMultiplier) override;
+    std::optional<bool> getIncludeFontPadding() override;
+    void setIncludeFontPadding(std::optional<bool> includeFontPadding) override;
     std::optional<double> getNumberOfLines() override;
     void setNumberOfLines(std::optional<double> numberOfLines) override;
     std::optional<bool> getEllipsis() override;

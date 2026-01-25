@@ -84,6 +84,12 @@ namespace margelo::nitro::stroketext {
       virtual void setTextTransform(std::optional<StrokeTextTransform> textTransform) = 0;
       virtual std::optional<double> getOpacity() = 0;
       virtual void setOpacity(std::optional<double> opacity) = 0;
+      virtual std::optional<bool> getAllowFontScaling() = 0;
+      virtual void setAllowFontScaling(std::optional<bool> allowFontScaling) = 0;
+      virtual std::optional<double> getMaxFontSizeMultiplier() = 0;
+      virtual void setMaxFontSizeMultiplier(std::optional<double> maxFontSizeMultiplier) = 0;
+      virtual std::optional<bool> getIncludeFontPadding() = 0;
+      virtual void setIncludeFontPadding(std::optional<bool> includeFontPadding) = 0;
       virtual std::optional<double> getNumberOfLines() = 0;
       virtual void setNumberOfLines(std::optional<double> numberOfLines) = 0;
       virtual std::optional<bool> getEllipsis() = 0;

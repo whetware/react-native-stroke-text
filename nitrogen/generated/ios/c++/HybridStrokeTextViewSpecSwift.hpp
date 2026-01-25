@@ -172,6 +172,27 @@ namespace margelo::nitro::stroketext {
     inline void setOpacity(std::optional<double> opacity) noexcept override {
       _swiftPart.setOpacity(opacity);
     }
+    inline std::optional<bool> getAllowFontScaling() noexcept override {
+      auto __result = _swiftPart.getAllowFontScaling();
+      return __result;
+    }
+    inline void setAllowFontScaling(std::optional<bool> allowFontScaling) noexcept override {
+      _swiftPart.setAllowFontScaling(allowFontScaling);
+    }
+    inline std::optional<double> getMaxFontSizeMultiplier() noexcept override {
+      auto __result = _swiftPart.getMaxFontSizeMultiplier();
+      return __result;
+    }
+    inline void setMaxFontSizeMultiplier(std::optional<double> maxFontSizeMultiplier) noexcept override {
+      _swiftPart.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+    }
+    inline std::optional<bool> getIncludeFontPadding() noexcept override {
+      auto __result = _swiftPart.getIncludeFontPadding();
+      return __result;
+    }
+    inline void setIncludeFontPadding(std::optional<bool> includeFontPadding) noexcept override {
+      _swiftPart.setIncludeFontPadding(includeFontPadding);
+    }
     inline std::optional<double> getNumberOfLines() noexcept override {
       auto __result = _swiftPart.getNumberOfLines();
       return __result;

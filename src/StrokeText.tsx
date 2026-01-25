@@ -91,6 +91,7 @@ export function StrokeText({
     textDecorationLine: styleTextDecorationLine,
     textTransform: styleTextTransform,
     opacity: styleOpacity,
+    includeFontPadding: styleIncludeFontPadding,
     padding: stylePadding,
     paddingVertical: stylePaddingVertical,
     paddingHorizontal: stylePaddingHorizontal,
@@ -101,8 +102,8 @@ export function StrokeText({
     ...containerStyle
   } = flattened ?? {}
 
-  const strokeWidth = nativeProps.strokeWidth ?? 0
-  const strokeInset = Math.ceil(strokeWidth)
+  const strokeWidth = Math.max(0, nativeProps.strokeWidth ?? 0)
+  const strokeInset = Math.ceil(strokeWidth) / 2
 
   const baseTop =
     firstNumber(
@@ -141,15 +142,12 @@ export function StrokeText({
       stylePadding
     ) ?? 0
 
-  const paddedTop = baseTop + strokeInset
-  const paddedRight = baseRight + strokeInset
-  const paddedBottom = baseBottom + strokeInset
-  const paddedLeft = baseLeft + strokeInset
-
   const effectiveNumberOfLines =
     nativeProps.numberOfLines != null && nativeProps.numberOfLines > 0
       ? nativeProps.numberOfLines
       : undefined
+  const effectiveIncludeFontPadding =
+    nativeProps.includeFontPadding ?? styleIncludeFontPadding
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -158,14 +156,19 @@ export function StrokeText({
         pointerEvents="none"
         numberOfLines={effectiveNumberOfLines}
         ellipsizeMode={rest.ellipsis ? 'tail' : undefined}
+        allowFontScaling={nativeProps.allowFontScaling}
+        maxFontSizeMultiplier={nativeProps.maxFontSizeMultiplier}
         style={[
           style,
           {
-            paddingTop: paddedTop,
-            paddingRight: paddedRight,
-            paddingBottom: paddedBottom,
-            paddingLeft: paddedLeft,
+            paddingTop: baseTop,
+            paddingRight: baseRight,
+            paddingBottom: baseBottom,
+            paddingLeft: baseLeft,
           },
+          effectiveIncludeFontPadding == null
+            ? null
+            : { includeFontPadding: effectiveIncludeFontPadding },
           styles.hiddenText,
         ]}
       >
@@ -190,6 +193,7 @@ export function StrokeText({
         }
         textTransform={nativeProps.textTransform ?? styleTextTransform}
         opacity={nativeProps.opacity ?? toNumber(styleOpacity)}
+        includeFontPadding={effectiveIncludeFontPadding}
         numberOfLines={nativeProps.numberOfLines}
         paddingTop={baseTop}
         paddingRight={baseRight}
@@ -197,7 +201,17 @@ export function StrokeText({
         paddingLeft={baseLeft}
         hybridRef={hybridRef ? callback(hybridRef) : undefined}
         pointerEvents="none"
-        style={StyleSheet.absoluteFill}
+        style={[
+          styles.overlay,
+          strokeInset === 0
+            ? null
+            : {
+                top: -strokeInset,
+                right: -strokeInset,
+                bottom: -strokeInset,
+                left: -strokeInset,
+              },
+        ]}
       />
     </View>
   )
@@ -206,6 +220,9 @@ export function StrokeText({
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-start',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
   },
   hiddenText: {
     opacity: 0,

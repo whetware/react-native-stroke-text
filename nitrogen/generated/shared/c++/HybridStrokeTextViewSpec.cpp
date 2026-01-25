@@ -42,6 +42,12 @@ namespace margelo::nitro::stroketext {
       prototype.registerHybridSetter("textTransform", &HybridStrokeTextViewSpec::setTextTransform);
       prototype.registerHybridGetter("opacity", &HybridStrokeTextViewSpec::getOpacity);
       prototype.registerHybridSetter("opacity", &HybridStrokeTextViewSpec::setOpacity);
+      prototype.registerHybridGetter("allowFontScaling", &HybridStrokeTextViewSpec::getAllowFontScaling);
+      prototype.registerHybridSetter("allowFontScaling", &HybridStrokeTextViewSpec::setAllowFontScaling);
+      prototype.registerHybridGetter("maxFontSizeMultiplier", &HybridStrokeTextViewSpec::getMaxFontSizeMultiplier);
+      prototype.registerHybridSetter("maxFontSizeMultiplier", &HybridStrokeTextViewSpec::setMaxFontSizeMultiplier);
+      prototype.registerHybridGetter("includeFontPadding", &HybridStrokeTextViewSpec::getIncludeFontPadding);
+      prototype.registerHybridSetter("includeFontPadding", &HybridStrokeTextViewSpec::setIncludeFontPadding);
       prototype.registerHybridGetter("numberOfLines", &HybridStrokeTextViewSpec::getNumberOfLines);
       prototype.registerHybridSetter("numberOfLines", &HybridStrokeTextViewSpec::setNumberOfLines);
       prototype.registerHybridGetter("ellipsis", &HybridStrokeTextViewSpec::getEllipsis);

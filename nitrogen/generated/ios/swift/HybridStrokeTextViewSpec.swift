@@ -25,6 +25,9 @@ public protocol HybridStrokeTextViewSpec_protocol: HybridObject, HybridView {
   var textDecorationLine: StrokeTextDecorationLine? { get set }
   var textTransform: StrokeTextTransform? { get set }
   var opacity: Double? { get set }
+  var allowFontScaling: Bool? { get set }
+  var maxFontSizeMultiplier: Double? { get set }
+  var includeFontPadding: Bool? { get set }
   var numberOfLines: Double? { get set }
   var ellipsis: Bool? { get set }
   var padding: Double? { get set }

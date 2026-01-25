@@ -54,6 +54,9 @@ final class StrokedTextLabel: UILabel {
   ) -> CGRect {
     let insetBounds = bounds.inset(by: textInsets)
     var rect = super.textRect(forBounds: insetBounds, limitedToNumberOfLines: numberOfLines)
+    // Match React Native <Text> behavior (top-aligned). UILabel may otherwise vertically center
+    // text when the bounds are taller than the rendered text.
+    rect.origin.y = insetBounds.origin.y
     rect.origin.x -= textInsets.left
     rect.origin.y -= textInsets.top
     rect.size.width += textInsets.left + textInsets.right

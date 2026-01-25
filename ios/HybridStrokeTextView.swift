@@ -20,6 +20,9 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
   var textDecorationLine: StrokeTextDecorationLine? = nil
   var textTransform: StrokeTextTransform? = nil
   var opacity: Double? = nil
+  var allowFontScaling: Bool? = nil
+  var maxFontSizeMultiplier: Double? = nil
+  var includeFontPadding: Bool? = nil
   var numberOfLines: Double? = nil
   var ellipsis: Bool? = nil
   var padding: Double? = nil
@@ -36,7 +39,7 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
     if let color = color, let parsed = StrokeTextColor.parse(color) {
       view.color = parsed
     } else {
-      view.color = .black
+      view.color = StrokeTextView.defaultTextColor()
     }
 
     if let strokeColor = strokeColor, let parsed = StrokeTextColor.parse(strokeColor) {
@@ -45,12 +48,20 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
       view.strokeColor = .clear
     }
 
-    view.strokeWidth = CGFloat(strokeWidth ?? 0)
+    let resolvedStrokeWidth = max(0, strokeWidth ?? 0)
+    view.strokeWidth = CGFloat(resolvedStrokeWidth)
 
     view.fontSize = CGFloat(fontSize ?? 14)
     view.fontWeight = fontWeight ?? "400"
     view.fontFamily = fontFamily
     view.fontStyle = fontStyle ?? .normal
+
+    view.allowFontScaling = allowFontScaling ?? true
+    if let multiplier = maxFontSizeMultiplier, multiplier.isFinite, multiplier >= 1 {
+      view.maxFontSizeMultiplier = CGFloat(multiplier)
+    } else {
+      view.maxFontSizeMultiplier = nil
+    }
 
     view.lineHeight = lineHeight.map { CGFloat($0) }
     view.letterSpacing = letterSpacing.map { CGFloat($0) }
@@ -72,7 +83,7 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
       paddingBottom: paddingBottom,
       paddingLeft: paddingLeft
     )
-    let strokeInset = CGFloat(ceil(strokeWidth ?? 0))
+    let strokeInset = CGFloat(ceil(resolvedStrokeWidth) / 2.0)
     view.paddingInsets = UIEdgeInsets(
       top: baseInsets.top + strokeInset,
       left: baseInsets.left + strokeInset,

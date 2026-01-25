@@ -142,6 +142,21 @@ using namespace margelo::nitro::stroketext::views;
     swiftPart.setOpacity(newViewProps.opacity.value);
     newViewProps.opacity.isDirty = false;
   }
+  // allowFontScaling: optional
+  if (newViewProps.allowFontScaling.isDirty) {
+    swiftPart.setAllowFontScaling(newViewProps.allowFontScaling.value);
+    newViewProps.allowFontScaling.isDirty = false;
+  }
+  // maxFontSizeMultiplier: optional
+  if (newViewProps.maxFontSizeMultiplier.isDirty) {
+    swiftPart.setMaxFontSizeMultiplier(newViewProps.maxFontSizeMultiplier.value);
+    newViewProps.maxFontSizeMultiplier.isDirty = false;
+  }
+  // includeFontPadding: optional
+  if (newViewProps.includeFontPadding.isDirty) {
+    swiftPart.setIncludeFontPadding(newViewProps.includeFontPadding.value);
+    newViewProps.includeFontPadding.isDirty = false;
+  }
   // numberOfLines: optional
   if (newViewProps.numberOfLines.isDirty) {
     swiftPart.setNumberOfLines(newViewProps.numberOfLines.value);

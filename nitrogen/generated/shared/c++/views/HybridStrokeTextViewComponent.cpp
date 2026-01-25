@@ -166,6 +166,36 @@ namespace margelo::nitro::stroketext::views {
         throw std::runtime_error(std::string("StrokeTextView.opacity: ") + exc.what());
       }
     }()),
+    allowFontScaling([&]() -> CachedProp<std::optional<bool>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("allowFontScaling", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.allowFontScaling;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<bool>>::fromRawValue(*runtime, value, sourceProps.allowFontScaling);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("StrokeTextView.allowFontScaling: ") + exc.what());
+      }
+    }()),
+    maxFontSizeMultiplier([&]() -> CachedProp<std::optional<double>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("maxFontSizeMultiplier", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.maxFontSizeMultiplier;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<double>>::fromRawValue(*runtime, value, sourceProps.maxFontSizeMultiplier);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("StrokeTextView.maxFontSizeMultiplier: ") + exc.what());
+      }
+    }()),
+    includeFontPadding([&]() -> CachedProp<std::optional<bool>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("includeFontPadding", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.includeFontPadding;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<bool>>::fromRawValue(*runtime, value, sourceProps.includeFontPadding);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("StrokeTextView.includeFontPadding: ") + exc.what());
+      }
+    }()),
     numberOfLines([&]() -> CachedProp<std::optional<double>> {
       try {
         const react::RawValue* rawValue = rawProps.at("numberOfLines", nullptr, nullptr);
@@ -283,6 +313,9 @@ namespace margelo::nitro::stroketext::views {
     textDecorationLine(other.textDecorationLine),
     textTransform(other.textTransform),
     opacity(other.opacity),
+    allowFontScaling(other.allowFontScaling),
+    maxFontSizeMultiplier(other.maxFontSizeMultiplier),
+    includeFontPadding(other.includeFontPadding),
     numberOfLines(other.numberOfLines),
     ellipsis(other.ellipsis),
     padding(other.padding),
@@ -310,6 +343,9 @@ namespace margelo::nitro::stroketext::views {
       case hashString("textDecorationLine"): return true;
       case hashString("textTransform"): return true;
       case hashString("opacity"): return true;
+      case hashString("allowFontScaling"): return true;
+      case hashString("maxFontSizeMultiplier"): return true;
+      case hashString("includeFontPadding"): return true;
       case hashString("numberOfLines"): return true;
       case hashString("ellipsis"): return true;
       case hashString("padding"): return true;

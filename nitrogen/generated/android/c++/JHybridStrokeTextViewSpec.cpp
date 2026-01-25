@@ -189,6 +189,33 @@ namespace margelo::nitro::stroketext {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* opacity */)>("setOpacity");
     method(_javaPart, opacity.has_value() ? jni::JDouble::valueOf(opacity.value()) : nullptr);
   }
+  std::optional<bool> JHybridStrokeTextViewSpec::getAllowFontScaling() {
+    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getAllowFontScaling");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional(static_cast<bool>(__result->value())) : std::nullopt;
+  }
+  void JHybridStrokeTextViewSpec::setAllowFontScaling(std::optional<bool> allowFontScaling) {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* allowFontScaling */)>("setAllowFontScaling");
+    method(_javaPart, allowFontScaling.has_value() ? jni::JBoolean::valueOf(allowFontScaling.value()) : nullptr);
+  }
+  std::optional<double> JHybridStrokeTextViewSpec::getMaxFontSizeMultiplier() {
+    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getMaxFontSizeMultiplier");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
+  }
+  void JHybridStrokeTextViewSpec::setMaxFontSizeMultiplier(std::optional<double> maxFontSizeMultiplier) {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* maxFontSizeMultiplier */)>("setMaxFontSizeMultiplier");
+    method(_javaPart, maxFontSizeMultiplier.has_value() ? jni::JDouble::valueOf(maxFontSizeMultiplier.value()) : nullptr);
+  }
+  std::optional<bool> JHybridStrokeTextViewSpec::getIncludeFontPadding() {
+    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getIncludeFontPadding");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional(static_cast<bool>(__result->value())) : std::nullopt;
+  }
+  void JHybridStrokeTextViewSpec::setIncludeFontPadding(std::optional<bool> includeFontPadding) {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* includeFontPadding */)>("setIncludeFontPadding");
+    method(_javaPart, includeFontPadding.has_value() ? jni::JBoolean::valueOf(includeFontPadding.value()) : nullptr);
+  }
   std::optional<double> JHybridStrokeTextViewSpec::getNumberOfLines() {
     static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getNumberOfLines");
     auto __result = method(_javaPart);

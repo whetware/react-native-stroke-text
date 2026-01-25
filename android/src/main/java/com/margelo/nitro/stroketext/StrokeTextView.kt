@@ -4,22 +4,30 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.graphics.Paint.FontMetricsInt
+import android.os.Build
 import android.text.Layout
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.text.style.LineHeightSpan
 import android.util.TypedValue
 import android.view.View
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.views.text.ReactFontManager
+import com.facebook.react.views.text.DefaultStyleValuesUtil
+import com.facebook.react.views.text.ReactTypefaceUtils
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.ceil
 
 internal class StrokeTextView(context: ThemedReactContext) : View(context) {
   var text: String = ""
-  var color: Int = Color.BLACK
+  var color: Int = resolvedDefaultTextColor()
   var strokeColor: Int = Color.TRANSPARENT
+  var strokeWidthDp: Double = 0.0
   var strokeWidthPx: Float = 0f
 
   var fontSizePx: Float = spToPx(14.0)
@@ -35,6 +43,7 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
 
   var numberOfLines: Int = 0
   var ellipsis: Boolean = false
+  var includeFontPadding: Boolean = true
 
   var paddingAllPx: Float? = null
   var paddingVerticalPx: Float? = null
@@ -90,6 +99,19 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
     }
 
     val transformedText = applyTextTransform(text, textTransform)
+    val textForLayout =
+      if (lineHeightPx != null && !lineHeightPx!!.isNaN() && transformedText.isNotEmpty()) {
+        SpannableString(transformedText).apply {
+          setSpan(
+            StrokeTextLineHeightSpan(lineHeightPx!!),
+            0,
+            length,
+            Spannable.SPAN_INCLUSIVE_INCLUSIVE,
+          )
+        }
+      } else {
+        transformedText
+      }
 
     val tf = resolveTypeface(fontFamily, fontWeight, fontStyle)
 
@@ -129,37 +151,77 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
 
     val alignment = toAlignment(textAlign)
 
-    val maxLines = if (numberOfLines > 0) numberOfLines else Int.MAX_VALUE
-
-    val spacingAdd = lineHeightPx?.let { lh ->
-      max(0f, lh - fillPaint.fontSpacing)
-    } ?: 0f
+    val maxLines = numberOfLines.takeIf { it > 0 }
 
     val fillBuilder =
-      StaticLayout.Builder.obtain(transformedText, 0, transformedText.length, fillPaint, availableWidth)
+      StaticLayout.Builder.obtain(textForLayout, 0, textForLayout.length, fillPaint, availableWidth)
       .setAlignment(alignment)
-      .setIncludePad(false)
-      .setLineSpacing(spacingAdd, 1f)
-      .setMaxLines(maxLines)
-    if (ellipsis) {
-      fillBuilder.setEllipsize(TextUtils.TruncateAt.END)
-      fillBuilder.setEllipsizedWidth(availableWidth)
+      .setIncludePad(includeFontPadding)
+      .setLineSpacing(0f, 1f)
+      .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
+      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      fillBuilder.setUseLineSpacingFromFallbacks(true)
+    }
+    if (textAlign == StrokeTextAlign.JUSTIFY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      fillBuilder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
+    }
+    if (maxLines != null) {
+      fillBuilder.setMaxLines(maxLines)
+      if (ellipsis) {
+        fillBuilder.setEllipsize(TextUtils.TruncateAt.END)
+        fillBuilder.setEllipsizedWidth(availableWidth)
+      }
     }
     fillLayout = fillBuilder.build()
 
     val strokeBuilder =
-      StaticLayout.Builder.obtain(transformedText, 0, transformedText.length, strokePaint, availableWidth)
+      StaticLayout.Builder.obtain(textForLayout, 0, textForLayout.length, strokePaint, availableWidth)
       .setAlignment(alignment)
-      .setIncludePad(false)
-      .setLineSpacing(spacingAdd, 1f)
-      .setMaxLines(maxLines)
-    if (ellipsis) {
-      strokeBuilder.setEllipsize(TextUtils.TruncateAt.END)
-      strokeBuilder.setEllipsizedWidth(availableWidth)
+      .setIncludePad(includeFontPadding)
+      .setLineSpacing(0f, 1f)
+      .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
+      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      strokeBuilder.setUseLineSpacingFromFallbacks(true)
+    }
+    if (textAlign == StrokeTextAlign.JUSTIFY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      strokeBuilder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
+    }
+    if (maxLines != null) {
+      strokeBuilder.setMaxLines(maxLines)
+      if (ellipsis) {
+        strokeBuilder.setEllipsize(TextUtils.TruncateAt.END)
+        strokeBuilder.setEllipsizedWidth(availableWidth)
+      }
     }
     strokeLayout = strokeBuilder.build()
 
     layoutDirty = false
+  }
+
+  private class StrokeTextLineHeightSpan(heightPx: Float) : LineHeightSpan {
+    private val lineHeight: Int = ceil(heightPx.toDouble()).toInt()
+
+    override fun chooseHeight(
+      text: CharSequence,
+      start: Int,
+      end: Int,
+      spanstartv: Int,
+      v: Int,
+      fm: FontMetricsInt,
+    ) {
+      val leading = lineHeight - ((-fm.ascent) + fm.descent)
+      fm.ascent -= ceil(leading / 2.0f).toInt()
+      fm.descent += floor(leading / 2.0f).toInt()
+
+      if (start == 0) {
+        fm.top = fm.ascent
+      }
+      if (end == text.length) {
+        fm.bottom = fm.descent
+      }
+    }
   }
 
   private fun toAlignment(align: StrokeTextAlign): Layout.Alignment {
@@ -184,8 +246,9 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
   }
 
   private fun strokeInsetPx(): Float {
-    if (strokeWidthPx <= 0f) return 0f
-    return ceil(strokeWidthPx.toDouble()).toFloat()
+    if (strokeWidthDp <= 0.0) return 0f
+    val insetDp = (ceil(strokeWidthDp) / 2.0).toFloat()
+    return dpToPx(insetDp.toDouble())
   }
 
   private fun resolveTypeface(
@@ -193,28 +256,14 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
     weight: String,
     style: StrokeTextFontStyle,
   ): Typeface {
-    val bold = isBold(weight)
-    val italic = style == StrokeTextFontStyle.ITALIC
-
-    val typefaceStyle = when {
-      bold && italic -> Typeface.BOLD_ITALIC
-      bold -> Typeface.BOLD
-      italic -> Typeface.ITALIC
-      else -> Typeface.NORMAL
-    }
-
     val fam = family?.takeIf { it.isNotBlank() }
-    if (fam != null) {
-      return ReactFontManager.getInstance().getTypeface(fam, typefaceStyle, context.assets)
-    }
-
-    return Typeface.defaultFromStyle(typefaceStyle)
+    val weightInt = ReactTypefaceUtils.parseFontWeight(weight)
+    val styleInt = if (style == StrokeTextFontStyle.ITALIC) Typeface.ITALIC else Typeface.NORMAL
+    return ReactTypefaceUtils.applyStyles(null, styleInt, weightInt, fam, context.assets)
   }
 
-  private fun isBold(weight: String): Boolean {
-    val trimmed = weight.trim()
-    if (trimmed.equals("bold", ignoreCase = true)) return true
-    return trimmed.toIntOrNull()?.let { it >= 600 } ?: false
+  fun resolvedDefaultTextColor(): Int {
+    return DefaultStyleValuesUtil.getDefaultTextColor(context)?.defaultColor ?: Color.BLACK
   }
 
   private fun applyTextTransform(text: String, transform: StrokeTextTransform): CharSequence {
@@ -246,52 +295,53 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
       val trimmed = color?.trim().orEmpty()
       if (trimmed.isEmpty()) return null
 
-      if (trimmed.startsWith("#")) {
-        return parseHex(trimmed)
-      }
-
       val lower = trimmed.lowercase()
+      if (lower.startsWith("#")) return parseHexColor(trimmed)
       if (lower.startsWith("rgba(")) return parseRgba(trimmed)
       if (lower.startsWith("rgb(")) return parseRgb(trimmed)
 
-      return null
+      return runCatching { Color.parseColor(trimmed) }.getOrNull()
     }
 
-    private fun parseHex(color: String): Int? {
-      var hex = color.drop(1)
+    private fun parseHexColor(color: String): Int? {
+      var hex = color.removePrefix("#").trim()
+      if (hex.isEmpty()) return null
 
       if (hex.length == 3) {
-        hex = hex.map { "$it$it" }.joinToString("")
+        // #RGB
+        hex = "${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}"
+      } else if (hex.length == 4) {
+        // #RGBA (CSS Color Module Level 4 / React Native)
+        hex = "${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}"
       }
 
-      if (hex.length == 6) {
-        val rgb = hex.toLongOrNull(16) ?: return null
-        return Color.rgb(
-          ((rgb shr 16) and 0xFF).toInt(),
-          ((rgb shr 8) and 0xFF).toInt(),
-          (rgb and 0xFF).toInt()
-        )
+      return when (hex.length) {
+        6 -> {
+          val rgb = hex.toLongOrNull(16) ?: return null
+          val r = ((rgb shr 16) and 0xFF).toInt()
+          val g = ((rgb shr 8) and 0xFF).toInt()
+          val b = (rgb and 0xFF).toInt()
+          Color.argb(255, r, g, b)
+        }
+        8 -> {
+          // #RRGGBBAA (CSS Color Module Level 4 / React Native)
+          val r = hex.substring(0, 2).toIntOrNull(16) ?: return null
+          val g = hex.substring(2, 4).toIntOrNull(16) ?: return null
+          val b = hex.substring(4, 6).toIntOrNull(16) ?: return null
+          val a = hex.substring(6, 8).toIntOrNull(16) ?: return null
+          Color.argb(a, r, g, b)
+        }
+        else -> null
       }
-
-      if (hex.length == 8) {
-        val rgba = hex.toLongOrNull(16) ?: return null
-        val r = ((rgba shr 24) and 0xFF).toInt()
-        val g = ((rgba shr 16) and 0xFF).toInt()
-        val b = ((rgba shr 8) and 0xFF).toInt()
-        val a = (rgba and 0xFF).toInt()
-        return Color.argb(a, r, g, b)
-      }
-
-      return null
     }
 
     private fun parseRgb(color: String): Int? {
       val inner = color.removePrefix("rgb(").removeSuffix(")")
       val parts = inner.split(",").map { it.trim() }
       if (parts.size != 3) return null
-      val r = parts[0].toIntOrNull() ?: return null
-      val g = parts[1].toIntOrNull() ?: return null
-      val b = parts[2].toIntOrNull() ?: return null
+      val r = parts[0].toIntOrNull()?.coerceIn(0, 255) ?: return null
+      val g = parts[1].toIntOrNull()?.coerceIn(0, 255) ?: return null
+      val b = parts[2].toIntOrNull()?.coerceIn(0, 255) ?: return null
       return Color.rgb(r, g, b)
     }
 
@@ -299,20 +349,60 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
       val inner = color.removePrefix("rgba(").removeSuffix(")")
       val parts = inner.split(",").map { it.trim() }
       if (parts.size != 4) return null
-      val r = parts[0].toIntOrNull() ?: return null
-      val g = parts[1].toIntOrNull() ?: return null
-      val b = parts[2].toIntOrNull() ?: return null
+      val r = parts[0].toIntOrNull()?.coerceIn(0, 255) ?: return null
+      val g = parts[1].toIntOrNull()?.coerceIn(0, 255) ?: return null
+      val b = parts[2].toIntOrNull()?.coerceIn(0, 255) ?: return null
       val aFloat = parts[3].toFloatOrNull() ?: return null
       val a = min(255, max(0, (aFloat * 255f).toInt()))
       return Color.argb(a, r, g, b)
     }
 
+    fun dpToPx(dp: Float, displayMetrics: android.util.DisplayMetrics): Float {
+      return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics)
+    }
+
     fun spToPx(sp: Double, displayMetrics: android.util.DisplayMetrics): Float {
       return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), displayMetrics)
+    }
+
+    fun spToPx(
+      sp: Double,
+      displayMetrics: android.util.DisplayMetrics,
+      maxFontSizeMultiplier: Float?,
+    ): Float {
+      val density = displayMetrics.density
+      if (density == 0f) return spToPx(sp, displayMetrics)
+
+      val fontScale = displayMetrics.scaledDensity / density
+      val effectiveFontScale =
+        if (maxFontSizeMultiplier == null || maxFontSizeMultiplier.isNaN() || maxFontSizeMultiplier <= 0f || maxFontSizeMultiplier < 1f) {
+          fontScale
+        } else {
+          min(fontScale, maxFontSizeMultiplier)
+        }
+
+      return (sp.toFloat() * density * effectiveFontScale)
+    }
+
+    fun textToPx(
+      value: Double,
+      allowFontScaling: Boolean,
+      maxFontSizeMultiplier: Float?,
+      displayMetrics: android.util.DisplayMetrics,
+    ): Float {
+      return if (allowFontScaling) {
+        spToPx(value, displayMetrics, maxFontSizeMultiplier)
+      } else {
+        dpToPx(value.toFloat(), displayMetrics)
+      }
     }
   }
 
   private fun spToPx(sp: Double): Float {
     return spToPx(sp, resources.displayMetrics)
+  }
+
+  private fun dpToPx(dp: Double): Float {
+    return dpToPx(dp.toFloat(), resources.displayMetrics)
   }
 }

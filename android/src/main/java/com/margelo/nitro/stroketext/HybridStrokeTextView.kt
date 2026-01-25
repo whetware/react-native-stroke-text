@@ -21,6 +21,9 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
   override var textDecorationLine: StrokeTextDecorationLine? = null
   override var textTransform: StrokeTextTransform? = null
   override var opacity: Double? = null
+  override var allowFontScaling: Boolean? = null
+  override var maxFontSizeMultiplier: Double? = null
+  override var includeFontPadding: Boolean? = null
   override var numberOfLines: Double? = null
   override var ellipsis: Boolean? = null
   override var padding: Double? = null
@@ -32,37 +35,73 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
   override var paddingLeft: Double? = null
 
   override fun afterUpdate() {
+    val displayMetrics = strokeTextView.resources.displayMetrics
+    val resolvedAllowFontScaling = allowFontScaling ?: true
+    val resolvedMaxFontSizeMultiplier =
+        maxFontSizeMultiplier
+            ?.toFloat()
+            ?.takeIf { it.isFinite() && it >= 1f }
+
     strokeTextView.text = text
 
-    strokeTextView.color = StrokeTextView.parseColor(color) ?: android.graphics.Color.BLACK
+    strokeTextView.color =
+        StrokeTextView.parseColor(color) ?: strokeTextView.resolvedDefaultTextColor()
     strokeTextView.strokeColor = StrokeTextView.parseColor(strokeColor) ?: android.graphics.Color.TRANSPARENT
-    strokeTextView.strokeWidthPx = StrokeTextView.spToPx(strokeWidth ?: 0.0, strokeTextView.resources.displayMetrics)
+    val resolvedStrokeWidth = (strokeWidth ?: 0.0).coerceAtLeast(0.0)
+    strokeTextView.strokeWidthDp = resolvedStrokeWidth
+    strokeTextView.strokeWidthPx =
+        StrokeTextView.dpToPx(
+            resolvedStrokeWidth.toFloat(),
+            displayMetrics,
+        )
 
-    strokeTextView.fontSizePx = StrokeTextView.spToPx(fontSize ?: 14.0, strokeTextView.resources.displayMetrics)
+    strokeTextView.fontSizePx =
+        StrokeTextView.textToPx(
+            fontSize ?: 14.0,
+            resolvedAllowFontScaling,
+            resolvedMaxFontSizeMultiplier,
+            displayMetrics,
+        )
     strokeTextView.fontWeight = fontWeight ?: "400"
     strokeTextView.fontFamily = fontFamily
     strokeTextView.fontStyle = fontStyle ?: StrokeTextFontStyle.NORMAL
-    strokeTextView.lineHeightPx = lineHeight?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.letterSpacingPx = letterSpacing?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
+    strokeTextView.lineHeightPx =
+        lineHeight?.let {
+          StrokeTextView.textToPx(
+              it,
+              resolvedAllowFontScaling,
+              resolvedMaxFontSizeMultiplier,
+              displayMetrics,
+          )
+        }
+    strokeTextView.letterSpacingPx =
+        letterSpacing?.let {
+          StrokeTextView.textToPx(
+              it,
+              resolvedAllowFontScaling,
+              resolvedMaxFontSizeMultiplier,
+              displayMetrics,
+          )
+        }
 
     strokeTextView.textAlign = textAlign ?: StrokeTextAlign.AUTO
     strokeTextView.textDecorationLine = textDecorationLine ?: StrokeTextDecorationLine.NONE
     strokeTextView.textTransform = textTransform ?: StrokeTextTransform.NONE
 
+    strokeTextView.includeFontPadding = includeFontPadding ?: true
     strokeTextView.numberOfLines = (numberOfLines ?: 0.0).toInt()
     strokeTextView.ellipsis = ellipsis ?: false
 
-    strokeTextView.paddingAllPx = padding?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingVerticalPx = paddingVertical?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingHorizontalPx = paddingHorizontal?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingTopPx = paddingTop?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingRightPx = paddingRight?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingBottomPx = paddingBottom?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
-    strokeTextView.paddingLeftPx = paddingLeft?.let { StrokeTextView.spToPx(it, strokeTextView.resources.displayMetrics) }
+    strokeTextView.paddingAllPx = padding?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingVerticalPx = paddingVertical?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingHorizontalPx = paddingHorizontal?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingTopPx = paddingTop?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingRightPx = paddingRight?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingBottomPx = paddingBottom?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
+    strokeTextView.paddingLeftPx = paddingLeft?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
 
     strokeTextView.alpha = (opacity ?: 1.0).toFloat()
 
     strokeTextView.invalidateTextLayout()
   }
 }
-

@@ -92,6 +92,18 @@ void JHybridStrokeTextViewStateUpdater::updateViewProps(jni::alias_ref<jni::JCla
     view->setOpacity(props.opacity.value);
     // TODO: Set isDirty = false
   }
+  if (props.allowFontScaling.isDirty) {
+    view->setAllowFontScaling(props.allowFontScaling.value);
+    // TODO: Set isDirty = false
+  }
+  if (props.maxFontSizeMultiplier.isDirty) {
+    view->setMaxFontSizeMultiplier(props.maxFontSizeMultiplier.value);
+    // TODO: Set isDirty = false
+  }
+  if (props.includeFontPadding.isDirty) {
+    view->setIncludeFontPadding(props.includeFontPadding.value);
+    // TODO: Set isDirty = false
+  }
   if (props.numberOfLines.isDirty) {
     view->setNumberOfLines(props.numberOfLines.value);
     // TODO: Set isDirty = false
