@@ -36,6 +36,9 @@ export function Example() {
     <StrokeText
       strokeWidth={4}
       strokeColor="#000"
+      // Android-only: defaults to false to avoid extra font padding shifting text down.
+      // Set to true to match React Native <Text/> defaults.
+      includeFontPadding={false}
       style={{ fontSize: 48, fontWeight: '800', color: '#fff' }}
     >
       Hello

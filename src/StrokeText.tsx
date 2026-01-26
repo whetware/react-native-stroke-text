@@ -147,7 +147,7 @@ export function StrokeText({
       ? nativeProps.numberOfLines
       : undefined
   const effectiveIncludeFontPadding =
-    nativeProps.includeFontPadding ?? styleIncludeFontPadding
+    nativeProps.includeFontPadding ?? styleIncludeFontPadding ?? false
 
   return (
     <View style={[styles.container, containerStyle]}>

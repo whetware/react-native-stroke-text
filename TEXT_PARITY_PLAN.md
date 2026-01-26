@@ -12,7 +12,8 @@ Make `StrokeText` render (stroke + fill) with **roughly the same typography and 
 - `fontSize`, `lineHeight`, `letterSpacing`: match RN’s **unit conversion + scaling rules**.
 - `allowFontScaling`, `maxFontSizeMultiplier`: common RN props that affect fontSize/lineHeight/letterSpacing.
 - `color`: default should match RN theme default; explicit color should match.
-- `includeFontPadding` (Android): default `true`, same effect as RN.
+- `includeFontPadding` (Android): supported; default is `false` in this package to avoid Android’s
+  extra font padding shifting glyphs downward. (RN `<Text>` defaults `true`.)
 - `textAlign`, `numberOfLines`, `ellipsis` (tail): keep behavior close enough for typical usage.
 - `textDecorationLine`, `textTransform`, `opacity`.
 
@@ -43,7 +44,7 @@ Make `StrokeText` render (stroke + fill) with **roughly the same typography and 
   - **text-like**: fontSize/lineHeight/letterSpacing → px using `scaledDensity` when `allowFontScaling=true`, clamped by `maxFontSizeMultiplier`.
   - letterSpacing: compute **em** (`letterSpacingPx / fontSizePx`) before setting `TextPaint.letterSpacing`.
 - [x] Default `color` to the theme’s default text color (not hardcoded black).
-- [x] Default `includeFontPadding=true`; wire to `StaticLayout.Builder.setIncludePad(includeFontPadding)`.
+- [x] Support `includeFontPadding`; wire to `StaticLayout.Builder.setIncludePad(includeFontPadding)` (default `false`).
 - [x] Typeface resolution:
   - Use RN’s helpers (e.g. `ReactTypefaceUtils.applyStyles(...)`) so numeric weights and custom fonts behave like `<Text>`.
 - [x] Stroke inset:

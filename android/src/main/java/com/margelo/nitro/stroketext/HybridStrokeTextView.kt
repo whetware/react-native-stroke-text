@@ -42,7 +42,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
             ?.toFloat()
             ?.takeIf { it.isFinite() && it >= 1f }
 
-    strokeTextView.text = text
+    strokeTextView.rawText = text
 
     strokeTextView.color =
         StrokeTextView.parseColor(color) ?: strokeTextView.resolvedDefaultTextColor()
@@ -62,7 +62,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
             resolvedMaxFontSizeMultiplier,
             displayMetrics,
         )
-    strokeTextView.fontWeight = fontWeight ?: "400"
+    strokeTextView.fontWeight = fontWeight
     strokeTextView.fontFamily = fontFamily
     strokeTextView.fontStyle = fontStyle ?: StrokeTextFontStyle.NORMAL
     strokeTextView.lineHeightPx =
@@ -88,7 +88,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
     strokeTextView.textDecorationLine = textDecorationLine ?: StrokeTextDecorationLine.NONE
     strokeTextView.textTransform = textTransform ?: StrokeTextTransform.NONE
 
-    strokeTextView.includeFontPadding = includeFontPadding ?: true
+    strokeTextView.includeFontPadding = includeFontPadding ?: false
     strokeTextView.numberOfLines = (numberOfLines ?: 0.0).toInt()
     strokeTextView.ellipsis = ellipsis ?: false
 

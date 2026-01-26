@@ -3,35 +3,35 @@ package com.margelo.nitro.stroketext
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.Paint.FontMetricsInt
+import android.graphics.Typeface
 import android.os.Build
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.StaticLayout
-import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.LineHeightSpan
 import android.util.TypedValue
-import android.view.View
+import android.view.Gravity
+import android.widget.TextView
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.views.text.DefaultStyleValuesUtil
 import com.facebook.react.views.text.ReactTypefaceUtils
-import kotlin.math.floor
+import java.lang.reflect.Modifier
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.ceil
 
-internal class StrokeTextView(context: ThemedReactContext) : View(context) {
-  var text: String = ""
+internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
+  var rawText: String = ""
   var color: Int = resolvedDefaultTextColor()
   var strokeColor: Int = Color.TRANSPARENT
   var strokeWidthDp: Double = 0.0
   var strokeWidthPx: Float = 0f
 
   var fontSizePx: Float = spToPx(14.0)
-  var fontWeight: String = "400"
+  var fontWeight: String? = null
   var fontFamily: String? = null
   var fontStyle: StrokeTextFontStyle = StrokeTextFontStyle.NORMAL
   var lineHeightPx: Float? = null
@@ -43,7 +43,6 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
 
   var numberOfLines: Int = 0
   var ellipsis: Boolean = false
-  var includeFontPadding: Boolean = true
 
   var paddingAllPx: Float? = null
   var paddingVerticalPx: Float? = null
@@ -53,53 +52,127 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
   var paddingBottomPx: Float? = null
   var paddingLeftPx: Float? = null
 
-  private val fillPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-  private val strokePaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-
-  private var fillLayout: StaticLayout? = null
-  private var strokeLayout: StaticLayout? = null
-  private var layoutDirty: Boolean = true
+  init {
+    // Default to no font padding to avoid Android's extra ascent/descent insets shifting the
+    // glyphs downward. (React Native <Text> defaults includeFontPadding=true, but most designs
+    // expect iOS/web-like top alignment.)
+    gravity = Gravity.TOP or Gravity.START
+    includeFontPadding = false
+  }
 
   fun invalidateTextLayout() {
-    layoutDirty = true
+    applyProps()
     requestLayout()
     invalidate()
   }
 
   override fun onDraw(canvas: Canvas) {
+    // Draw stroke behind fill, using TextView's layout so metrics match RN <Text/> as closely as
+    // possible (especially for bold fonts).
+    val layout = layout
+    if (layout != null && strokeWidthPx > 0f && strokeColor != Color.TRANSPARENT) {
+      val textPaint = paint
+      val prevStyle = textPaint.style
+      val prevStrokeWidth = textPaint.strokeWidth
+      val prevStrokeJoin = textPaint.strokeJoin
+      val prevStrokeCap = textPaint.strokeCap
+      val prevColor = textPaint.color
+      val prevUnderline = textPaint.isUnderlineText
+      val prevStrike = textPaint.isStrikeThruText
+
+      val saveCount = canvas.save()
+      val compoundPaddingLeft = compoundPaddingLeft
+      val extendedPaddingTop = extendedPaddingTop
+
+      canvas.translate(compoundPaddingLeft.toFloat(), extendedPaddingTop.toFloat())
+      canvas.translate(-scrollX.toFloat(), -scrollY.toFloat())
+
+      // Only stroke the glyph outlines; keep underline/strike in the fill pass.
+      textPaint.isUnderlineText = false
+      textPaint.isStrikeThruText = false
+
+      textPaint.style = Paint.Style.STROKE
+      textPaint.strokeJoin = Paint.Join.ROUND
+      textPaint.strokeCap = Paint.Cap.ROUND
+      textPaint.strokeWidth = strokeWidthPx
+      textPaint.color = strokeColor
+      layout.draw(canvas)
+
+      canvas.restoreToCount(saveCount)
+
+      textPaint.style = prevStyle
+      textPaint.strokeWidth = prevStrokeWidth
+      textPaint.strokeJoin = prevStrokeJoin
+      textPaint.strokeCap = prevStrokeCap
+      textPaint.color = prevColor
+      textPaint.isUnderlineText = prevUnderline
+      textPaint.isStrikeThruText = prevStrike
+    }
+
     super.onDraw(canvas)
-    ensureLayout()
-
-    val sLayout = strokeLayout ?: return
-    val fLayout = fillLayout ?: return
-
-    canvas.save()
-    canvas.translate(effectivePaddingLeft(), effectivePaddingTop())
-    sLayout.draw(canvas)
-    fLayout.draw(canvas)
-    canvas.restore()
   }
 
-  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-    super.onSizeChanged(w, h, oldw, oldh)
-    if (w != oldw) {
-      layoutDirty = true
+  private fun applyProps() {
+    // Padding: apply stroke inset in native to compensate for the overlay expansion in JS.
+    val inset = strokeInsetPx()
+    val left = floorToInt(resolvePadding(paddingLeftPx, paddingHorizontalPx, paddingAllPx) + inset)
+    val top = floorToInt(resolvePadding(paddingTopPx, paddingVerticalPx, paddingAllPx) + inset)
+    val right = floorToInt(resolvePadding(paddingRightPx, paddingHorizontalPx, paddingAllPx) + inset)
+    val bottom = floorToInt(resolvePadding(paddingBottomPx, paddingVerticalPx, paddingAllPx) + inset)
+    setPadding(left, top, right, bottom)
+
+    // Font
+    setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSizePx)
+    typeface = resolveTypeface(fontFamily, fontWeight, fontStyle)
+
+    // Mirror RN's CustomStyleSpan flags.
+    applyCustomStyleTextFlags(paint, fontFamily, fontWeight, fontStyle)
+
+    // Letter spacing is specified in px/pt; TextView expects em.
+    val letterSpacingEm =
+      if (letterSpacingPx != null && !letterSpacingPx!!.isNaN() && fontSizePx > 0f) {
+        letterSpacingPx!! / fontSizePx
+      } else {
+        0f
+      }
+    letterSpacing = letterSpacingEm
+
+    // Text decorations
+    val underline =
+      textDecorationLine == StrokeTextDecorationLine.UNDERLINE ||
+        textDecorationLine == StrokeTextDecorationLine.UNDERLINE_LINE_THROUGH
+    val strike =
+      textDecorationLine == StrokeTextDecorationLine.LINE_THROUGH ||
+        textDecorationLine == StrokeTextDecorationLine.UNDERLINE_LINE_THROUGH
+    paint.isUnderlineText = underline
+    paint.isStrikeThruText = strike
+
+    // Alignment
+    val horizontalGravity =
+      when (textAlign) {
+        StrokeTextAlign.RIGHT -> Gravity.END
+        StrokeTextAlign.CENTER -> Gravity.CENTER_HORIZONTAL
+        else -> Gravity.START
+      }
+    gravity = Gravity.TOP or horizontalGravity
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      justificationMode =
+        if (textAlign == StrokeTextAlign.JUSTIFY) Layout.JUSTIFICATION_MODE_INTER_WORD
+        else Layout.JUSTIFICATION_MODE_NONE
     }
-  }
 
-  private fun ensureLayout() {
-    if (!layoutDirty) return
+    // Line limits / ellipsizing
+    val maxLines = if (numberOfLines > 0) numberOfLines else Int.MAX_VALUE
+    setMaxLines(maxLines)
+    ellipsize = if (ellipsis && numberOfLines > 0) TextUtils.TruncateAt.END else null
 
-    val availableWidth =
-      max(0, width - effectivePaddingLeft().toInt() - effectivePaddingRight().toInt())
-    if (availableWidth == 0) {
-      fillLayout = null
-      strokeLayout = null
-      return
-    }
+    // Colors
+    setTextColor(color)
 
-    val transformedText = applyTextTransform(text, textTransform)
-    val textForLayout =
+    // Text + transform + line height (set last so layout is created with the final paint settings).
+    val transformedText = applyTextTransform(rawText, textTransform)
+    val textForLayout: CharSequence =
       if (lineHeightPx != null && !lineHeightPx!!.isNaN() && transformedText.isNotEmpty()) {
         SpannableString(transformedText).apply {
           setSpan(
@@ -112,134 +185,8 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
       } else {
         transformedText
       }
-
-    val tf = resolveTypeface(fontFamily, fontWeight, fontStyle)
-
-    fillPaint.reset()
-    fillPaint.isAntiAlias = true
-    fillPaint.typeface = tf
-    fillPaint.textSize = fontSizePx
-    fillPaint.color = color
-
-    strokePaint.reset()
-    strokePaint.isAntiAlias = true
-    strokePaint.typeface = tf
-    strokePaint.textSize = fontSizePx
-    strokePaint.style = Paint.Style.STROKE
-    strokePaint.strokeJoin = Paint.Join.ROUND
-    strokePaint.strokeCap = Paint.Cap.ROUND
-    strokePaint.strokeWidth = strokeWidthPx
-    strokePaint.color = strokeColor
-
-    val underline = textDecorationLine == StrokeTextDecorationLine.UNDERLINE ||
-      textDecorationLine == StrokeTextDecorationLine.UNDERLINE_LINE_THROUGH
-    val strike = textDecorationLine == StrokeTextDecorationLine.LINE_THROUGH ||
-      textDecorationLine == StrokeTextDecorationLine.UNDERLINE_LINE_THROUGH
-
-    fillPaint.isUnderlineText = underline
-    fillPaint.isStrikeThruText = strike
-    strokePaint.isUnderlineText = underline
-    strokePaint.isStrikeThruText = strike
-
-    val letterSpacingEm = if (letterSpacingPx != null && fontSizePx > 0f) {
-      letterSpacingPx!! / fontSizePx
-    } else {
-      0f
-    }
-    fillPaint.letterSpacing = letterSpacingEm
-    strokePaint.letterSpacing = letterSpacingEm
-
-    val alignment = toAlignment(textAlign)
-
-    val maxLines = numberOfLines.takeIf { it > 0 }
-
-    val fillBuilder =
-      StaticLayout.Builder.obtain(textForLayout, 0, textForLayout.length, fillPaint, availableWidth)
-      .setAlignment(alignment)
-      .setIncludePad(includeFontPadding)
-      .setLineSpacing(0f, 1f)
-      .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
-      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      fillBuilder.setUseLineSpacingFromFallbacks(true)
-    }
-    if (textAlign == StrokeTextAlign.JUSTIFY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      fillBuilder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
-    }
-    if (maxLines != null) {
-      fillBuilder.setMaxLines(maxLines)
-      if (ellipsis) {
-        fillBuilder.setEllipsize(TextUtils.TruncateAt.END)
-        fillBuilder.setEllipsizedWidth(availableWidth)
-      }
-    }
-    fillLayout = fillBuilder.build()
-
-    val strokeBuilder =
-      StaticLayout.Builder.obtain(textForLayout, 0, textForLayout.length, strokePaint, availableWidth)
-      .setAlignment(alignment)
-      .setIncludePad(includeFontPadding)
-      .setLineSpacing(0f, 1f)
-      .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
-      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      strokeBuilder.setUseLineSpacingFromFallbacks(true)
-    }
-    if (textAlign == StrokeTextAlign.JUSTIFY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      strokeBuilder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
-    }
-    if (maxLines != null) {
-      strokeBuilder.setMaxLines(maxLines)
-      if (ellipsis) {
-        strokeBuilder.setEllipsize(TextUtils.TruncateAt.END)
-        strokeBuilder.setEllipsizedWidth(availableWidth)
-      }
-    }
-    strokeLayout = strokeBuilder.build()
-
-    layoutDirty = false
+    setText(textForLayout)
   }
-
-  private class StrokeTextLineHeightSpan(heightPx: Float) : LineHeightSpan {
-    private val lineHeight: Int = ceil(heightPx.toDouble()).toInt()
-
-    override fun chooseHeight(
-      text: CharSequence,
-      start: Int,
-      end: Int,
-      spanstartv: Int,
-      v: Int,
-      fm: FontMetricsInt,
-    ) {
-      val leading = lineHeight - ((-fm.ascent) + fm.descent)
-      fm.ascent -= ceil(leading / 2.0f).toInt()
-      fm.descent += floor(leading / 2.0f).toInt()
-
-      if (start == 0) {
-        fm.top = fm.ascent
-      }
-      if (end == text.length) {
-        fm.bottom = fm.descent
-      }
-    }
-  }
-
-  private fun toAlignment(align: StrokeTextAlign): Layout.Alignment {
-    return when (align) {
-      StrokeTextAlign.RIGHT -> Layout.Alignment.ALIGN_OPPOSITE
-      StrokeTextAlign.CENTER -> Layout.Alignment.ALIGN_CENTER
-      StrokeTextAlign.LEFT, StrokeTextAlign.AUTO, StrokeTextAlign.JUSTIFY -> Layout.Alignment.ALIGN_NORMAL
-    }
-  }
-
-  private fun effectivePaddingTop(): Float =
-    resolvePadding(paddingTopPx, paddingVerticalPx, paddingAllPx) + strokeInsetPx()
-  private fun effectivePaddingBottom(): Float =
-    resolvePadding(paddingBottomPx, paddingVerticalPx, paddingAllPx) + strokeInsetPx()
-  private fun effectivePaddingLeft(): Float =
-    resolvePadding(paddingLeftPx, paddingHorizontalPx, paddingAllPx) + strokeInsetPx()
-  private fun effectivePaddingRight(): Float =
-    resolvePadding(paddingRightPx, paddingHorizontalPx, paddingAllPx) + strokeInsetPx()
 
   private fun resolvePadding(specific: Float?, axis: Float?, all: Float?): Float {
     return specific ?: axis ?: all ?: 0f
@@ -251,9 +198,14 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
     return dpToPx(insetDp.toDouble())
   }
 
+  private fun floorToInt(value: Float): Int {
+    // React Native consistently floors padding values when applying them to native views.
+    return kotlin.math.floor(value.toDouble()).toInt()
+  }
+
   private fun resolveTypeface(
     family: String?,
-    weight: String,
+    weight: String?,
     style: StrokeTextFontStyle,
   ): Typeface {
     val fam = family?.takeIf { it.isNotBlank() }
@@ -262,11 +214,41 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
     return ReactTypefaceUtils.applyStyles(null, styleInt, weightInt, fam, context.assets)
   }
 
+  private fun applyCustomStyleTextFlags(
+    paint: Paint,
+    family: String?,
+    weight: String?,
+    style: StrokeTextFontStyle,
+  ) {
+    val isCustomFamily = !family.isNullOrBlank()
+    val isCustomItalic = style == StrokeTextFontStyle.ITALIC
+    val isCustomWeight =
+      ReactTypefaceUtils.parseFontWeight(weight) != com.facebook.react.common.ReactConstants.UNSET
+    val hasCustomStyle = isCustomFamily || isCustomItalic || isCustomWeight
+
+    // Mirror React Native's CustomStyleSpan defaults.
+    paint.isSubpixelText = hasCustomStyle
+    paint.isLinearText = hasCustomStyle && isAndroidLinearTextEnabled()
+  }
+
+  private fun isAndroidLinearTextEnabled(): Boolean {
+    return try {
+      val method =
+        ReactNativeFeatureFlags::class.java.methods.firstOrNull {
+          it.name == "enableAndroidLinearText" && it.parameterCount == 0
+        } ?: return false
+      val receiver = if (Modifier.isStatic(method.modifiers)) null else ReactNativeFeatureFlags
+      (method.invoke(receiver) as? Boolean) == true
+    } catch (_: Throwable) {
+      false
+    }
+  }
+
   fun resolvedDefaultTextColor(): Int {
     return DefaultStyleValuesUtil.getDefaultTextColor(context)?.defaultColor ?: Color.BLACK
   }
 
-  private fun applyTextTransform(text: String, transform: StrokeTextTransform): CharSequence {
+  private fun applyTextTransform(text: String, transform: StrokeTextTransform): String {
     return when (transform) {
       StrokeTextTransform.UPPERCASE -> text.uppercase()
       StrokeTextTransform.LOWERCASE -> text.lowercase()
@@ -288,6 +270,30 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
       }
     }
     return sb.toString()
+  }
+
+  private class StrokeTextLineHeightSpan(heightPx: Float) : LineHeightSpan {
+    private val lineHeight: Int = ceil(heightPx.toDouble()).toInt()
+
+    override fun chooseHeight(
+      text: CharSequence,
+      start: Int,
+      end: Int,
+      spanstartv: Int,
+      v: Int,
+      fm: FontMetricsInt,
+    ) {
+      val leading = lineHeight - ((-fm.ascent) + fm.descent)
+      fm.ascent -= ceil(leading / 2.0f).toInt()
+      fm.descent += kotlin.math.floor(leading / 2.0f).toInt()
+
+      if (start == 0) {
+        fm.top = fm.ascent
+      }
+      if (end == text.length) {
+        fm.bottom = fm.descent
+      }
+    }
   }
 
   companion object {
@@ -375,7 +381,12 @@ internal class StrokeTextView(context: ThemedReactContext) : View(context) {
 
       val fontScale = displayMetrics.scaledDensity / density
       val effectiveFontScale =
-        if (maxFontSizeMultiplier == null || maxFontSizeMultiplier.isNaN() || maxFontSizeMultiplier <= 0f || maxFontSizeMultiplier < 1f) {
+        if (
+          maxFontSizeMultiplier == null ||
+          maxFontSizeMultiplier.isNaN() ||
+          maxFontSizeMultiplier <= 0f ||
+          maxFontSizeMultiplier < 1f
+        ) {
           fontScale
         } else {
           min(fontScale, maxFontSizeMultiplier)
