@@ -87,8 +87,8 @@ namespace margelo::nitro::stroketext {
     void setIncludeFontPadding(std::optional<bool> includeFontPadding) override;
     std::optional<double> getNumberOfLines() override;
     void setNumberOfLines(std::optional<double> numberOfLines) override;
-    std::optional<bool> getEllipsis() override;
-    void setEllipsis(std::optional<bool> ellipsis) override;
+    std::optional<StrokeTextEllipsizeMode> getEllipsizeMode() override;
+    void setEllipsizeMode(std::optional<StrokeTextEllipsizeMode> ellipsizeMode) override;
     std::optional<double> getPadding() override;
     void setPadding(std::optional<double> padding) override;
     std::optional<double> getPaddingVertical() override;

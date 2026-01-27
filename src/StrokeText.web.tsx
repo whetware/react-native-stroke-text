@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, type TextStyle } from 'react-native'
+import { StyleSheet, Text, View, type TextStyle } from 'react-native'
 
 import type { StrokeTextProps } from './types'
 
@@ -9,73 +9,163 @@ function resolveText(text: unknown, children: unknown): string {
   return ''
 }
 
-function buildTextShadow(width: number, color: string): string {
-  const w = Math.max(0, width)
-  if (w === 0) return ''
-  const o = w
-  const shadows = [
-    `${-o}px 0 0 ${color}`,
-    `${o}px 0 0 ${color}`,
-    `0 ${-o}px 0 ${color}`,
-    `0 ${o}px 0 ${color}`,
-    `${-o}px ${-o}px 0 ${color}`,
-    `${o}px ${-o}px 0 ${color}`,
-    `${-o}px ${o}px 0 ${color}`,
-    `${o}px ${o}px 0 ${color}`,
-  ]
-  return shadows.join(', ')
+function toNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+function firstNumber(...values: unknown[]): number | undefined {
+  for (const value of values) {
+    const n = toNumber(value)
+    if (n != null) return n
+  }
+  return undefined
 }
 
 export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) {
   const resolvedText = resolveText(text, children)
   const flattened = StyleSheet.flatten(style) as TextStyle | undefined
 
-  const fillColor = rest.color ?? flattened?.color ?? '#000'
-  const strokeColor = rest.strokeColor ?? '#000'
-  const strokeWidth = rest.strokeWidth ?? 0
-  const strokeInset = Math.ceil(strokeWidth)
+  const {
+    color: styleColor,
+    fontSize: _styleFontSize,
+    fontWeight: _styleFontWeight,
+    fontFamily: _styleFontFamily,
+    fontStyle: _styleFontStyle,
+    lineHeight: _styleLineHeight,
+    letterSpacing: _styleLetterSpacing,
+    textAlign: _styleTextAlign,
+    textDecorationLine: _styleTextDecorationLine,
+    textTransform: _styleTextTransform,
+    opacity: _styleOpacity,
+    includeFontPadding: _styleIncludeFontPadding,
+    padding: stylePadding,
+    paddingVertical: stylePaddingVertical,
+    paddingHorizontal: stylePaddingHorizontal,
+    paddingTop: stylePaddingTop,
+    paddingRight: stylePaddingRight,
+    paddingBottom: stylePaddingBottom,
+    paddingLeft: stylePaddingLeft,
+    ...containerStyle
+  } = flattened ?? {}
 
-  const baseAll = rest.padding ?? (flattened as any)?.padding ?? 0
-  const baseVertical = rest.paddingVertical ?? (flattened as any)?.paddingVertical
-  const baseHorizontal =
-    rest.paddingHorizontal ?? (flattened as any)?.paddingHorizontal
-  const baseTop = rest.paddingTop ?? (flattened as any)?.paddingTop
-  const baseRight = rest.paddingRight ?? (flattened as any)?.paddingRight
-  const baseBottom = rest.paddingBottom ?? (flattened as any)?.paddingBottom
-  const baseLeft = rest.paddingLeft ?? (flattened as any)?.paddingLeft
+  const fillColor = rest.color ?? styleColor ?? '#000'
+  const strokeColor = rest.strokeColor ?? 'transparent'
+  const strokeWidth = Math.max(0, rest.strokeWidth ?? 0)
+  const strokeInset = Math.ceil(strokeWidth) / 2
 
-  const paddingTop = (baseTop ?? baseVertical ?? baseAll) + strokeInset
-  const paddingRight = (baseRight ?? baseHorizontal ?? baseAll) + strokeInset
-  const paddingBottom = (baseBottom ?? baseVertical ?? baseAll) + strokeInset
-  const paddingLeft = (baseLeft ?? baseHorizontal ?? baseAll) + strokeInset
-
-  const webStyle: any = {
-    ...(flattened as any),
-    color: fillColor,
-    paddingTop,
-    paddingRight,
-    paddingBottom,
-    paddingLeft,
-  }
-
-  if (strokeWidth > 0) {
-    webStyle.WebkitTextStrokeWidth = `${strokeWidth}px`
-    webStyle.WebkitTextStrokeColor = strokeColor
-    webStyle.textShadow = buildTextShadow(strokeWidth, strokeColor)
-  }
+  const baseTop =
+    firstNumber(
+      rest.paddingTop,
+      stylePaddingTop,
+      rest.paddingVertical,
+      stylePaddingVertical,
+      rest.padding,
+      stylePadding
+    ) ?? 0
+  const baseRight =
+    firstNumber(
+      rest.paddingRight,
+      stylePaddingRight,
+      rest.paddingHorizontal,
+      stylePaddingHorizontal,
+      rest.padding,
+      stylePadding
+    ) ?? 0
+  const baseBottom =
+    firstNumber(
+      rest.paddingBottom,
+      stylePaddingBottom,
+      rest.paddingVertical,
+      stylePaddingVertical,
+      rest.padding,
+      stylePadding
+    ) ?? 0
+  const baseLeft =
+    firstNumber(
+      rest.paddingLeft,
+      stylePaddingLeft,
+      rest.paddingHorizontal,
+      stylePaddingHorizontal,
+      rest.padding,
+      stylePadding
+    ) ?? 0
 
   const effectiveNumberOfLines =
     rest.numberOfLines != null && rest.numberOfLines > 0
       ? rest.numberOfLines
       : undefined
+  const effectiveEllipsizeMode =
+    effectiveNumberOfLines == null ? undefined : rest.ellipsizeMode ?? 'tail'
 
   return (
-    <Text
-      numberOfLines={effectiveNumberOfLines}
-      ellipsizeMode={rest.ellipsis ? 'tail' : undefined}
-      style={webStyle}
-    >
-      {resolvedText}
-    </Text>
+    <View style={[styles.container, containerStyle]}>
+      <Text
+        accessible={false}
+        pointerEvents="none"
+        numberOfLines={effectiveNumberOfLines}
+        ellipsizeMode={effectiveEllipsizeMode}
+        style={[
+          style,
+          {
+            paddingTop: baseTop,
+            paddingRight: baseRight,
+            paddingBottom: baseBottom,
+            paddingLeft: baseLeft,
+          },
+          styles.hiddenText,
+        ]}
+      >
+        {resolvedText}
+      </Text>
+
+      <Text
+        pointerEvents="none"
+        numberOfLines={effectiveNumberOfLines}
+        ellipsizeMode={effectiveEllipsizeMode}
+        style={[
+          style,
+          {
+            color: fillColor,
+            paddingTop: baseTop + strokeInset,
+            paddingRight: baseRight + strokeInset,
+            paddingBottom: baseBottom + strokeInset,
+            paddingLeft: baseLeft + strokeInset,
+          },
+          strokeWidth > 0 && strokeColor !== 'transparent'
+            ? ({
+                WebkitTextStrokeWidth: `${strokeWidth}px`,
+                WebkitTextStrokeColor: strokeColor,
+                WebkitTextFillColor: fillColor,
+                textStroke: `${strokeWidth}px ${strokeColor}`,
+                textFillColor: fillColor,
+                paintOrder: 'stroke fill',
+              } as any)
+            : null,
+          styles.overlay,
+          strokeInset === 0
+            ? null
+            : {
+                top: -strokeInset,
+                right: -strokeInset,
+                bottom: -strokeInset,
+                left: -strokeInset,
+              },
+        ]}
+      >
+        {resolvedText}
+      </Text>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'flex-start',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  hiddenText: {
+    opacity: 0,
+  },
+})

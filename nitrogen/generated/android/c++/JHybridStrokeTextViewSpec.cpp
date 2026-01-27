@@ -15,6 +15,8 @@ namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
+// Forward declaration of `StrokeTextEllipsizeMode` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 
 #include <string>
 #include <optional>
@@ -26,6 +28,8 @@ namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
 #include "JStrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
 #include "JStrokeTextTransform.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
+#include "JStrokeTextEllipsizeMode.hpp"
 
 namespace margelo::nitro::stroketext {
 
@@ -225,14 +229,14 @@ namespace margelo::nitro::stroketext {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* numberOfLines */)>("setNumberOfLines");
     method(_javaPart, numberOfLines.has_value() ? jni::JDouble::valueOf(numberOfLines.value()) : nullptr);
   }
-  std::optional<bool> JHybridStrokeTextViewSpec::getEllipsis() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getEllipsis");
+  std::optional<StrokeTextEllipsizeMode> JHybridStrokeTextViewSpec::getEllipsizeMode() {
+    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextEllipsizeMode>()>("getEllipsizeMode");
     auto __result = method(_javaPart);
-    return __result != nullptr ? std::make_optional(static_cast<bool>(__result->value())) : std::nullopt;
+    return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
-  void JHybridStrokeTextViewSpec::setEllipsis(std::optional<bool> ellipsis) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* ellipsis */)>("setEllipsis");
-    method(_javaPart, ellipsis.has_value() ? jni::JBoolean::valueOf(ellipsis.value()) : nullptr);
+  void JHybridStrokeTextViewSpec::setEllipsizeMode(std::optional<StrokeTextEllipsizeMode> ellipsizeMode) {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextEllipsizeMode> /* ellipsizeMode */)>("setEllipsizeMode");
+    method(_javaPart, ellipsizeMode.has_value() ? JStrokeTextEllipsizeMode::fromCpp(ellipsizeMode.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPadding() {
     static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPadding");

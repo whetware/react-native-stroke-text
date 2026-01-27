@@ -16,7 +16,7 @@
   - Content: `text?: string`, `children?: string`
   - Stroke: `strokeColor?: string`, `strokeWidth?: number`
   - Fill: `color?: string`
-  - Layout behavior: `numberOfLines?: number`, `ellipsis?: boolean`
+  - Layout behavior: `numberOfLines?: number`, `ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip'`
   - Typography: `fontSize?`, `fontWeight?`, `fontFamily?`, `fontStyle?`, `letterSpacing?`, `lineHeight?`, `textAlign?`, `textDecorationLine?`, `textTransform?`, `opacity?`
   - Optional padding props (to avoid clipping): `padding?`, `paddingHorizontal?`, `paddingVertical?`, `paddingTop?`, `paddingRight?`, `paddingBottom?`, `paddingLeft?`
   - `style` is accepted for layout; supported text-style keys are also read from `style` and forwarded as explicit props.
@@ -36,7 +36,7 @@
 ### Android (Kotlin)
 - Implement a custom `StrokeTextView` (View) that:
   - Uses `TextPaint` + `StaticLayout` to render both stroke and fill.
-  - Handles padding, multiline, alignment, ellipsis, and `numberOfLines`.
+  - Handles padding, multiline, alignment, `ellipsizeMode`, and `numberOfLines`.
   - Converts RN-style units (dp/sp-like numbers) to px.
   - Requests layout + invalidates when props change.
 - Implement `HybridStrokeTextView : HybridStrokeTextViewSpec` that owns the `StrokeTextView` and maps Nitro props → view updates.

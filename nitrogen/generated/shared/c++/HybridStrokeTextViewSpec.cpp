@@ -50,8 +50,8 @@ namespace margelo::nitro::stroketext {
       prototype.registerHybridSetter("includeFontPadding", &HybridStrokeTextViewSpec::setIncludeFontPadding);
       prototype.registerHybridGetter("numberOfLines", &HybridStrokeTextViewSpec::getNumberOfLines);
       prototype.registerHybridSetter("numberOfLines", &HybridStrokeTextViewSpec::setNumberOfLines);
-      prototype.registerHybridGetter("ellipsis", &HybridStrokeTextViewSpec::getEllipsis);
-      prototype.registerHybridSetter("ellipsis", &HybridStrokeTextViewSpec::setEllipsis);
+      prototype.registerHybridGetter("ellipsizeMode", &HybridStrokeTextViewSpec::getEllipsizeMode);
+      prototype.registerHybridSetter("ellipsizeMode", &HybridStrokeTextViewSpec::setEllipsizeMode);
       prototype.registerHybridGetter("padding", &HybridStrokeTextViewSpec::getPadding);
       prototype.registerHybridSetter("padding", &HybridStrokeTextViewSpec::setPadding);
       prototype.registerHybridGetter("paddingVertical", &HybridStrokeTextViewSpec::getPaddingVertical);

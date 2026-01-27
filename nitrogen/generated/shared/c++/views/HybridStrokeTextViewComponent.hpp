@@ -22,6 +22,7 @@
 #include "StrokeTextAlign.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
 #include <memory>
 #include "HybridStrokeTextViewSpec.hpp"
 #include <functional>
@@ -65,7 +66,7 @@ namespace margelo::nitro::stroketext::views {
     CachedProp<std::optional<double>> maxFontSizeMultiplier;
     CachedProp<std::optional<bool>> includeFontPadding;
     CachedProp<std::optional<double>> numberOfLines;
-    CachedProp<std::optional<bool>> ellipsis;
+    CachedProp<std::optional<StrokeTextEllipsizeMode>> ellipsizeMode;
     CachedProp<std::optional<double>> padding;
     CachedProp<std::optional<double>> paddingVertical;
     CachedProp<std::optional<double>> paddingHorizontal;

@@ -162,10 +162,10 @@ using namespace margelo::nitro::stroketext::views;
     swiftPart.setNumberOfLines(newViewProps.numberOfLines.value);
     newViewProps.numberOfLines.isDirty = false;
   }
-  // ellipsis: optional
-  if (newViewProps.ellipsis.isDirty) {
-    swiftPart.setEllipsis(newViewProps.ellipsis.value);
-    newViewProps.ellipsis.isDirty = false;
+  // ellipsizeMode: optional
+  if (newViewProps.ellipsizeMode.isDirty) {
+    swiftPart.setEllipsizeMode(newViewProps.ellipsizeMode.value);
+    newViewProps.ellipsizeMode.isDirty = false;
   }
   // padding: optional
   if (newViewProps.padding.isDirty) {

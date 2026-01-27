@@ -29,7 +29,7 @@ public protocol HybridStrokeTextViewSpec_protocol: HybridObject, HybridView {
   var maxFontSizeMultiplier: Double? { get set }
   var includeFontPadding: Bool? { get set }
   var numberOfLines: Double? { get set }
-  var ellipsis: Bool? { get set }
+  var ellipsizeMode: StrokeTextEllipsizeMode? { get set }
   var padding: Double? { get set }
   var paddingVertical: Double? { get set }
   var paddingHorizontal: Double? { get set }

@@ -464,12 +464,12 @@ open class HybridStrokeTextViewSpec_cxx {
     }
   }
   
-  public final var ellipsis: bridge.std__optional_bool_ {
+  public final var ellipsizeMode: bridge.std__optional_StrokeTextEllipsizeMode_ {
     @inline(__always)
     get {
-      return { () -> bridge.std__optional_bool_ in
-        if let __unwrappedValue = self.__implementation.ellipsis {
-          return bridge.create_std__optional_bool_(__unwrappedValue)
+      return { () -> bridge.std__optional_StrokeTextEllipsizeMode_ in
+        if let __unwrappedValue = self.__implementation.ellipsizeMode {
+          return bridge.create_std__optional_StrokeTextEllipsizeMode_(__unwrappedValue)
         } else {
           return .init()
         }
@@ -477,14 +477,7 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.ellipsis = { () -> Bool? in
-        if bridge.has_value_std__optional_bool_(newValue) {
-          let __unwrapped = bridge.get_std__optional_bool_(newValue)
-          return __unwrapped
-        } else {
-          return nil
-        }
-      }()
+      self.__implementation.ellipsizeMode = newValue.value
     }
   }
   

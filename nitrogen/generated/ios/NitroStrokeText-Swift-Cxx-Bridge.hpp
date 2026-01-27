@@ -14,6 +14,8 @@ namespace margelo::nitro::stroketext { class HybridStrokeTextViewSpec; }
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
+// Forward declaration of `StrokeTextEllipsizeMode` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 // Forward declaration of `StrokeTextFontStyle` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextFontStyle; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
@@ -27,6 +29,7 @@ namespace NitroStrokeText { class HybridStrokeTextViewSpec_cxx; }
 #include "HybridStrokeTextViewSpec.hpp"
 #include "StrokeTextAlign.hpp"
 #include "StrokeTextDecorationLine.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
 #include "StrokeTextFontStyle.hpp"
 #include "StrokeTextTransform.hpp"
 #include <memory>
@@ -141,6 +144,21 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline bool get_std__optional_bool_(const std::optional<bool>& optional) noexcept {
+    return *optional;
+  }
+  
+  // pragma MARK: std::optional<StrokeTextEllipsizeMode>
+  /**
+   * Specialized version of `std::optional<StrokeTextEllipsizeMode>`.
+   */
+  using std__optional_StrokeTextEllipsizeMode_ = std::optional<StrokeTextEllipsizeMode>;
+  inline std::optional<StrokeTextEllipsizeMode> create_std__optional_StrokeTextEllipsizeMode_(const StrokeTextEllipsizeMode& value) noexcept {
+    return std::optional<StrokeTextEllipsizeMode>(value);
+  }
+  inline bool has_value_std__optional_StrokeTextEllipsizeMode_(const std::optional<StrokeTextEllipsizeMode>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline StrokeTextEllipsizeMode get_std__optional_StrokeTextEllipsizeMode_(const std::optional<StrokeTextEllipsizeMode>& optional) noexcept {
     return *optional;
   }
   

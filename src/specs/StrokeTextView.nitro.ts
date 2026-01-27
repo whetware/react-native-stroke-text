@@ -12,6 +12,7 @@ export type StrokeTextDecorationLine =
   | 'underline line-through'
 export type StrokeTextTransform = 'none' | 'uppercase' | 'lowercase' | 'capitalize'
 export type StrokeTextFontStyle = 'normal' | 'italic'
+export type StrokeTextEllipsizeMode = 'head' | 'middle' | 'tail' | 'clip'
 
 export interface StrokeTextProps extends HybridViewProps {
   text: string
@@ -36,7 +37,7 @@ export interface StrokeTextProps extends HybridViewProps {
   includeFontPadding?: boolean
 
   numberOfLines?: number
-  ellipsis?: boolean
+  ellipsizeMode?: StrokeTextEllipsizeMode
 
   padding?: number
   paddingVertical?: number

@@ -206,14 +206,14 @@ namespace margelo::nitro::stroketext::views {
         throw std::runtime_error(std::string("StrokeTextView.numberOfLines: ") + exc.what());
       }
     }()),
-    ellipsis([&]() -> CachedProp<std::optional<bool>> {
+    ellipsizeMode([&]() -> CachedProp<std::optional<StrokeTextEllipsizeMode>> {
       try {
-        const react::RawValue* rawValue = rawProps.at("ellipsis", nullptr, nullptr);
-        if (rawValue == nullptr) return sourceProps.ellipsis;
+        const react::RawValue* rawValue = rawProps.at("ellipsizeMode", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.ellipsizeMode;
         const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
-        return CachedProp<std::optional<bool>>::fromRawValue(*runtime, value, sourceProps.ellipsis);
+        return CachedProp<std::optional<StrokeTextEllipsizeMode>>::fromRawValue(*runtime, value, sourceProps.ellipsizeMode);
       } catch (const std::exception& exc) {
-        throw std::runtime_error(std::string("StrokeTextView.ellipsis: ") + exc.what());
+        throw std::runtime_error(std::string("StrokeTextView.ellipsizeMode: ") + exc.what());
       }
     }()),
     padding([&]() -> CachedProp<std::optional<double>> {
@@ -317,7 +317,7 @@ namespace margelo::nitro::stroketext::views {
     maxFontSizeMultiplier(other.maxFontSizeMultiplier),
     includeFontPadding(other.includeFontPadding),
     numberOfLines(other.numberOfLines),
-    ellipsis(other.ellipsis),
+    ellipsizeMode(other.ellipsizeMode),
     padding(other.padding),
     paddingVertical(other.paddingVertical),
     paddingHorizontal(other.paddingHorizontal),
@@ -347,7 +347,7 @@ namespace margelo::nitro::stroketext::views {
       case hashString("maxFontSizeMultiplier"): return true;
       case hashString("includeFontPadding"): return true;
       case hashString("numberOfLines"): return true;
-      case hashString("ellipsis"): return true;
+      case hashString("ellipsizeMode"): return true;
       case hashString("padding"): return true;
       case hashString("paddingVertical"): return true;
       case hashString("paddingHorizontal"): return true;

@@ -108,8 +108,8 @@ void JHybridStrokeTextViewStateUpdater::updateViewProps(jni::alias_ref<jni::JCla
     view->setNumberOfLines(props.numberOfLines.value);
     // TODO: Set isDirty = false
   }
-  if (props.ellipsis.isDirty) {
-    view->setEllipsis(props.ellipsis.value);
+  if (props.ellipsizeMode.isDirty) {
+    view->setEllipsizeMode(props.ellipsizeMode.value);
     // TODO: Set isDirty = false
   }
   if (props.padding.isDirty) {

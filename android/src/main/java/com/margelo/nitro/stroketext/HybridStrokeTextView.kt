@@ -25,7 +25,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
   override var maxFontSizeMultiplier: Double? = null
   override var includeFontPadding: Boolean? = null
   override var numberOfLines: Double? = null
-  override var ellipsis: Boolean? = null
+  override var ellipsizeMode: StrokeTextEllipsizeMode? = null
   override var padding: Double? = null
   override var paddingVertical: Double? = null
   override var paddingHorizontal: Double? = null
@@ -90,7 +90,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
 
     strokeTextView.includeFontPadding = includeFontPadding ?: false
     strokeTextView.numberOfLines = (numberOfLines ?: 0.0).toInt()
-    strokeTextView.ellipsis = ellipsis ?: false
+    strokeTextView.ellipsizeMode = ellipsizeMode
 
     strokeTextView.paddingAllPx = padding?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }
     strokeTextView.paddingVerticalPx = paddingVertical?.let { StrokeTextView.dpToPx(it.toFloat(), displayMetrics) }

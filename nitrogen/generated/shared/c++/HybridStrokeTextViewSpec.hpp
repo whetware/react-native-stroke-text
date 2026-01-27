@@ -21,6 +21,8 @@ namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
+// Forward declaration of `StrokeTextEllipsizeMode` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 
 #include <string>
 #include <optional>
@@ -28,6 +30,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
 #include "StrokeTextAlign.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
 
 namespace margelo::nitro::stroketext {
 
@@ -92,8 +95,8 @@ namespace margelo::nitro::stroketext {
       virtual void setIncludeFontPadding(std::optional<bool> includeFontPadding) = 0;
       virtual std::optional<double> getNumberOfLines() = 0;
       virtual void setNumberOfLines(std::optional<double> numberOfLines) = 0;
-      virtual std::optional<bool> getEllipsis() = 0;
-      virtual void setEllipsis(std::optional<bool> ellipsis) = 0;
+      virtual std::optional<StrokeTextEllipsizeMode> getEllipsizeMode() = 0;
+      virtual void setEllipsizeMode(std::optional<StrokeTextEllipsizeMode> ellipsizeMode) = 0;
       virtual std::optional<double> getPadding() = 0;
       virtual void setPadding(std::optional<double> padding) = 0;
       virtual std::optional<double> getPaddingVertical() = 0;

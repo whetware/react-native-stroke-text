@@ -154,7 +154,7 @@ abstract class HybridStrokeTextViewSpec: HybridView() {
   @get:Keep
   @set:DoNotStrip
   @set:Keep
-  abstract var ellipsis: Boolean?
+  abstract var ellipsizeMode: StrokeTextEllipsizeMode?
   
   @get:DoNotStrip
   @get:Keep

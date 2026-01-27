@@ -42,7 +42,7 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   var textTransform: StrokeTextTransform = StrokeTextTransform.NONE
 
   var numberOfLines: Int = 0
-  var ellipsis: Boolean = false
+  var ellipsizeMode: StrokeTextEllipsizeMode? = null
 
   var paddingAllPx: Float? = null
   var paddingVerticalPx: Float? = null
@@ -165,7 +165,17 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
     // Line limits / ellipsizing
     val maxLines = if (numberOfLines > 0) numberOfLines else Int.MAX_VALUE
     setMaxLines(maxLines)
-    ellipsize = if (ellipsis && numberOfLines > 0) TextUtils.TruncateAt.END else null
+    ellipsize =
+      if (numberOfLines <= 0) {
+        null
+      } else {
+        when (ellipsizeMode ?: StrokeTextEllipsizeMode.TAIL) {
+          StrokeTextEllipsizeMode.HEAD -> TextUtils.TruncateAt.START
+          StrokeTextEllipsizeMode.MIDDLE -> TextUtils.TruncateAt.MIDDLE
+          StrokeTextEllipsizeMode.CLIP -> null
+          StrokeTextEllipsizeMode.TAIL -> TextUtils.TruncateAt.END
+        }
+      }
 
     // Colors
     setTextColor(color)

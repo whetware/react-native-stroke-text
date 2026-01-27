@@ -64,11 +64,14 @@ final class StrokeTextView: UIView {
   }
 
   var numberOfLines: Int = 0 {
-    didSet { label.numberOfLines = numberOfLines }
+    didSet {
+      label.numberOfLines = numberOfLines
+      updateLineBreakMode()
+    }
   }
 
-  var ellipsis: Bool = false {
-    didSet { label.lineBreakMode = ellipsis ? .byTruncatingTail : .byWordWrapping }
+  var ellipsizeMode: StrokeTextEllipsizeMode = .tail {
+    didSet { updateLineBreakMode() }
   }
 
   var paddingInsets: UIEdgeInsets = .zero {
@@ -83,6 +86,7 @@ final class StrokeTextView: UIView {
     isOpaque = false
     addSubview(label)
     label.textInsets = paddingInsets
+    updateLineBreakMode()
   }
 
   @available(*, unavailable)
@@ -153,6 +157,29 @@ final class StrokeTextView: UIView {
     invalidateMeasurements()
   }
 
+  private func updateLineBreakMode() {
+    if numberOfLines <= 0 {
+      label.lineBreakMode = .byWordWrapping
+      invalidateMeasurements()
+      return
+    }
+
+    switch ellipsizeMode {
+    case .head:
+      label.lineBreakMode = .byTruncatingHead
+    case .middle:
+      label.lineBreakMode = .byTruncatingMiddle
+    case .clip:
+      label.lineBreakMode = .byClipping
+    case .tail:
+      label.lineBreakMode = .byTruncatingTail
+    @unknown default:
+      label.lineBreakMode = .byTruncatingTail
+    }
+
+    invalidateMeasurements()
+  }
+
   private func scaleTypography(_ value: CGFloat) -> CGFloat {
     guard value > 0, allowFontScaling else { return value }
     let scaled = UIFontMetrics.default.scaledValue(for: value)
@@ -206,7 +233,7 @@ final class StrokeTextView: UIView {
       let isItalic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
 
       let italicPenalty = isItalic == italic ? 0.0 : 1000.0
-      let weightPenalty = abs(Double(fontWeight) - targetWeight)
+      let weightPenalty = Swift.abs(Double(fontWeight) - targetWeight)
       let score = italicPenalty + weightPenalty
 
       if score < bestScore {

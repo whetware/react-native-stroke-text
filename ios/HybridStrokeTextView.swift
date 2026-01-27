@@ -24,7 +24,7 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
   var maxFontSizeMultiplier: Double? = nil
   var includeFontPadding: Bool? = nil
   var numberOfLines: Double? = nil
-  var ellipsis: Bool? = nil
+  var ellipsizeMode: StrokeTextEllipsizeMode? = nil
   var padding: Double? = nil
   var paddingVertical: Double? = nil
   var paddingHorizontal: Double? = nil
@@ -70,7 +70,7 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
     view.textTransform = textTransform ?? .none
 
     view.numberOfLines = Int(numberOfLines ?? 0)
-    view.ellipsis = ellipsis ?? false
+    view.ellipsizeMode = ellipsizeMode ?? .tail
 
     view.alpha = CGFloat(opacity ?? 1)
 

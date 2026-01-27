@@ -20,6 +20,8 @@ namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
+// Forward declaration of `StrokeTextEllipsizeMode` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 
 #include <string>
 #include <optional>
@@ -27,6 +29,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
 #include "StrokeTextAlign.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
 
 #include "NitroStrokeText-Swift-Cxx-Umbrella.hpp"
 
@@ -200,12 +203,12 @@ namespace margelo::nitro::stroketext {
     inline void setNumberOfLines(std::optional<double> numberOfLines) noexcept override {
       _swiftPart.setNumberOfLines(numberOfLines);
     }
-    inline std::optional<bool> getEllipsis() noexcept override {
-      auto __result = _swiftPart.getEllipsis();
+    inline std::optional<StrokeTextEllipsizeMode> getEllipsizeMode() noexcept override {
+      auto __result = _swiftPart.getEllipsizeMode();
       return __result;
     }
-    inline void setEllipsis(std::optional<bool> ellipsis) noexcept override {
-      _swiftPart.setEllipsis(ellipsis);
+    inline void setEllipsizeMode(std::optional<StrokeTextEllipsizeMode> ellipsizeMode) noexcept override {
+      _swiftPart.setEllipsizeMode(ellipsizeMode);
     }
     inline std::optional<double> getPadding() noexcept override {
       auto __result = _swiftPart.getPadding();

@@ -146,6 +146,10 @@ export function StrokeText({
     nativeProps.numberOfLines != null && nativeProps.numberOfLines > 0
       ? nativeProps.numberOfLines
       : undefined
+  const effectiveEllipsizeMode =
+    effectiveNumberOfLines == null
+      ? undefined
+      : nativeProps.ellipsizeMode ?? 'tail'
   const effectiveIncludeFontPadding =
     nativeProps.includeFontPadding ?? styleIncludeFontPadding ?? false
 
@@ -155,7 +159,7 @@ export function StrokeText({
         accessible={false}
         pointerEvents="none"
         numberOfLines={effectiveNumberOfLines}
-        ellipsizeMode={rest.ellipsis ? 'tail' : undefined}
+        ellipsizeMode={effectiveEllipsizeMode}
         allowFontScaling={nativeProps.allowFontScaling}
         maxFontSizeMultiplier={nativeProps.maxFontSizeMultiplier}
         style={[
@@ -195,6 +199,7 @@ export function StrokeText({
         opacity={nativeProps.opacity ?? toNumber(styleOpacity)}
         includeFontPadding={effectiveIncludeFontPadding}
         numberOfLines={nativeProps.numberOfLines}
+        ellipsizeMode={effectiveEllipsizeMode}
         paddingTop={baseTop}
         paddingRight={baseRight}
         paddingBottom={baseBottom}

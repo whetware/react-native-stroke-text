@@ -14,12 +14,13 @@ Make `StrokeText` render (stroke + fill) with **roughly the same typography and 
 - `color`: default should match RN theme default; explicit color should match.
 - `includeFontPadding` (Android): supported; default is `false` in this package to avoid Android’s
   extra font padding shifting glyphs downward. (RN `<Text>` defaults `true`.)
-- `textAlign`, `numberOfLines`, `ellipsis` (tail): keep behavior close enough for typical usage.
+- `textAlign`, `numberOfLines`, `ellipsizeMode` (default `tail`): keep behavior close enough for typical usage.
+  - Note: React Native Android only supports `tail` reliably when `numberOfLines > 1`.
 - `textDecorationLine`, `textTransform`, `opacity`.
 
 ### Explicitly out of scope (for now)
 - Nested `<Text>` children / rich text spans / inline views & images.
-- Full `ellipsizeMode` (`head`/`middle`/`clip`) and `textAlignVertical`.
+- `textAlignVertical`.
 - Selection, links/press handling, accessibility parity.
 - `fontVariant` / `fontFeatureSettings` and other advanced typography.
 - Exact line-height semantics (RN uses span-based, web-like behavior; we’ll do a simpler approximation).
@@ -62,7 +63,7 @@ Make `StrokeText` render (stroke + fill) with **roughly the same typography and 
 - [ ] Visual sanity checks on Android + iOS:
   - weights: `400`, `600`, `700`, `bold`
   - families: system + one custom Expo font
-  - `letterSpacing`, `lineHeight`, `textAlign`, `numberOfLines` + `ellipsis`
+  - `letterSpacing`, `lineHeight`, `textAlign`, `numberOfLines` + `ellipsizeMode`
   - `allowFontScaling` on/off and `maxFontSizeMultiplier`
 - [x] `pnpm typecheck`
 - [x] `pnpm specs` (if spec changed)

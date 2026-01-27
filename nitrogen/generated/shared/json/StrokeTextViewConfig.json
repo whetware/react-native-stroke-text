@@ -22,7 +22,7 @@
     "maxFontSizeMultiplier": true,
     "includeFontPadding": true,
     "numberOfLines": true,
-    "ellipsis": true,
+    "ellipsizeMode": true,
     "padding": true,
     "paddingVertical": true,
     "paddingHorizontal": true,

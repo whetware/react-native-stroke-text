@@ -14,6 +14,8 @@ namespace margelo::nitro::stroketext { class HybridStrokeTextViewSpec; }
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
+// Forward declaration of `StrokeTextEllipsizeMode` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 // Forward declaration of `StrokeTextFontStyle` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextFontStyle; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
@@ -23,6 +25,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
 #include "HybridStrokeTextViewSpec.hpp"
 #include "StrokeTextAlign.hpp"
 #include "StrokeTextDecorationLine.hpp"
+#include "StrokeTextEllipsizeMode.hpp"
 #include "StrokeTextFontStyle.hpp"
 #include "StrokeTextTransform.hpp"
 #include <memory>
