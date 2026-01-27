@@ -27,16 +27,16 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
 
   const {
     color: styleColor,
-    fontSize: _styleFontSize,
-    fontWeight: _styleFontWeight,
-    fontFamily: _styleFontFamily,
-    fontStyle: _styleFontStyle,
-    lineHeight: _styleLineHeight,
-    letterSpacing: _styleLetterSpacing,
-    textAlign: _styleTextAlign,
-    textDecorationLine: _styleTextDecorationLine,
-    textTransform: _styleTextTransform,
-    opacity: _styleOpacity,
+    fontSize: styleFontSize,
+    fontWeight: styleFontWeight,
+    fontFamily: styleFontFamily,
+    fontStyle: styleFontStyle,
+    lineHeight: styleLineHeight,
+    letterSpacing: styleLetterSpacing,
+    textAlign: styleTextAlign,
+    textDecorationLine: styleTextDecorationLine,
+    textTransform: styleTextTransform,
+    opacity: styleOpacity,
     includeFontPadding: _styleIncludeFontPadding,
     padding: stylePadding,
     paddingVertical: stylePaddingVertical,
@@ -47,6 +47,19 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
     paddingLeft: stylePaddingLeft,
     ...containerStyle
   } = flattened ?? {}
+
+  const textStyle = {
+    fontSize: rest.fontSize ?? styleFontSize,
+    fontWeight: (rest.fontWeight ?? styleFontWeight) as TextStyle['fontWeight'],
+    fontFamily: rest.fontFamily ?? styleFontFamily,
+    fontStyle: rest.fontStyle ?? styleFontStyle,
+    lineHeight: rest.lineHeight ?? styleLineHeight,
+    letterSpacing: rest.letterSpacing ?? styleLetterSpacing,
+    textAlign: rest.textAlign ?? styleTextAlign,
+    textDecorationLine: rest.textDecorationLine ?? styleTextDecorationLine,
+    textTransform: rest.textTransform ?? styleTextTransform,
+    opacity: rest.opacity ?? styleOpacity,
+  } satisfies TextStyle
 
   const fillColor = rest.color ?? styleColor ?? '#000'
   const strokeColor = rest.strokeColor ?? 'transparent'
@@ -105,7 +118,7 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
         numberOfLines={effectiveNumberOfLines}
         ellipsizeMode={effectiveEllipsizeMode}
         style={[
-          style,
+          textStyle,
           {
             paddingTop: baseTop,
             paddingRight: baseRight,
@@ -123,7 +136,7 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
         numberOfLines={effectiveNumberOfLines}
         ellipsizeMode={effectiveEllipsizeMode}
         style={[
-          style,
+          textStyle,
           {
             color: fillColor,
             paddingTop: baseTop + strokeInset,
@@ -131,6 +144,12 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
             paddingBottom: baseBottom + strokeInset,
             paddingLeft: baseLeft + strokeInset,
           },
+          strokeInset === 0 ? null : ({ maxWidth: 'none' } as any),
+          // react-native-web uses `box-sizing: border-box` globally; with ellipsizing enabled
+          // (`overflow: hidden` + `text-overflow: ellipsis`), the extra stroke padding can reduce
+          // the content box by a couple pixels and cause false-positive ellipses for some fonts.
+          // Use `content-box` so padding doesn't shrink the text's available width.
+          strokeInset === 0 ? null : ({ boxSizing: 'content-box' } as any),
           strokeWidth > 0 && strokeColor !== 'transparent'
             ? ({
                 WebkitTextStrokeWidth: `${strokeWidth}px`,
