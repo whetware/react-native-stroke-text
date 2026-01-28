@@ -17,10 +17,7 @@ pnpm add @whetware/react-native-stroke-text react-native-nitro-modules
 
 ### Expo (managed)
 
-This package requires the **New Architecture**. If you use `expo prebuild`, add the config plugin:
-
-- `app.json` / `app.config.js`: add `plugins: ["@whetware/react-native-stroke-text"]`
-- Then run: `npx expo prebuild`
+This package requires the **New Architecture**. Ensure it’s enabled in your app before installing.
 
 ## Usage
 

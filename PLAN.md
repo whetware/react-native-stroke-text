@@ -3,7 +3,7 @@
 ## Goals
 - Ship a **new-architecture-only** React Native library that renders **stroke/outline text** as a native view on **iOS (Swift)** and **Android (Kotlin)**, plus a **web** implementation.
 - Use **Nitro Modules + Nitrogen** to generate the Fabric host component bindings.
-- Provide **Expo** support (managed workflow via prebuild/EAS), including an optional config plugin to enable New Arch flags.
+- Provide **Expo** support (managed workflow via prebuild/EAS) when the app has the New Architecture enabled.
 
 ## Non-goals (initial cut)
 - Full parity with React Native `<Text>` (nested children, inline spans, rich text).
@@ -43,15 +43,12 @@
 
 ### Web (JS)
 - Provide `src/index.web.ts(x)` that exports `StrokeText` implemented in pure React:
-  - Render a `<Text>` with multi-direction `textShadow` to approximate an outline.
+  - Prefer CSS `-webkit-text-stroke` for the outline where supported.
   - Keep the same prop surface as native (best-effort).
 
 ## Expo support
 - Ensure the package autolinks cleanly in prebuild projects (podspec + Gradle already in template).
-- Add an optional `app.plugin.js` config plugin that enables New Architecture flags for Expo prebuild:
-  - Android: set `newArchEnabled=true` in `android/gradle.properties`
-  - iOS: set `newArchEnabled=true` in `ios/Podfile.properties.json` (Expo-managed iOS projects)
-- Document required Expo settings + versions in `README.md`.
+- Document the New Architecture requirement in `README.md`.
 
 ## Package hygiene
 - Update `package.json` name to `@whetware/react-native-stroke-text` and align README metadata.

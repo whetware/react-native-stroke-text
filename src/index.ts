@@ -1,4 +1,4 @@
-export { StrokeText } from './StrokeText'
+export { StrokeText } from './StrokeText.js'
 export type {
   StrokeTextAlign,
   StrokeTextDecorationLine,
@@ -8,5 +8,4 @@ export type {
   StrokeTextProps,
   StrokeTextTransform,
   StrokeTextView,
-} from './types'
-
+} from './types.js'
