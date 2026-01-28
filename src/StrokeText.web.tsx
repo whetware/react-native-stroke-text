@@ -37,7 +37,6 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
     textDecorationLine: styleTextDecorationLine,
     textTransform: styleTextTransform,
     opacity: styleOpacity,
-    includeFontPadding: _styleIncludeFontPadding,
     padding: stylePadding,
     paddingVertical: stylePaddingVertical,
     paddingHorizontal: stylePaddingHorizontal,
