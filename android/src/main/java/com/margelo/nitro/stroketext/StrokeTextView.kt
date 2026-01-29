@@ -113,7 +113,7 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   }
 
   private fun applyProps() {
-    // Padding: apply stroke inset in native to compensate for the overlay expansion in JS.
+    // Padding: apply a stroke inset so the outline stays within the view bounds.
     val inset = strokeInsetPx()
     val left = floorToInt(resolvePadding(paddingLeftPx, paddingHorizontalPx, paddingAllPx) + inset)
     val top = floorToInt(resolvePadding(paddingTopPx, paddingVerticalPx, paddingAllPx) + inset)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, type TextStyle } from 'react-native'
+import { I18nManager, StyleSheet, Text, View, type TextStyle } from 'react-native'
 
 import type { StrokeTextProps } from './types'
 
@@ -65,6 +65,50 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
   const strokeWidth = Math.max(0, rest.strokeWidth ?? 0)
   const strokeInset = Math.ceil(strokeWidth) / 2
 
+  const baseMarginTop =
+    firstNumber(
+      containerStyle.marginTop,
+      containerStyle.marginVertical,
+      containerStyle.margin
+    ) ?? 0
+  const baseMarginRight =
+    firstNumber(
+      containerStyle.marginRight,
+      I18nManager.isRTL ? containerStyle.marginStart : containerStyle.marginEnd,
+      containerStyle.marginHorizontal,
+      containerStyle.margin
+    ) ?? 0
+  const baseMarginBottom =
+    firstNumber(
+      containerStyle.marginBottom,
+      containerStyle.marginVertical,
+      containerStyle.margin
+    ) ?? 0
+  const baseMarginLeft =
+    firstNumber(
+      containerStyle.marginLeft,
+      I18nManager.isRTL ? containerStyle.marginEnd : containerStyle.marginStart,
+      containerStyle.marginHorizontal,
+      containerStyle.margin
+    ) ?? 0
+
+  const baseMarginStart = toNumber(containerStyle.marginStart)
+  const baseMarginEnd = toNumber(containerStyle.marginEnd)
+
+  const strokeInsetMarginStyle =
+    strokeInset === 0
+      ? null
+      : {
+          marginTop: baseMarginTop - strokeInset,
+          marginRight: baseMarginRight - strokeInset,
+          marginBottom: baseMarginBottom - strokeInset,
+          marginLeft: baseMarginLeft - strokeInset,
+          ...(baseMarginStart == null
+            ? {}
+            : { marginStart: baseMarginStart - strokeInset }),
+          ...(baseMarginEnd == null ? {} : { marginEnd: baseMarginEnd - strokeInset }),
+        }
+
   const baseTop =
     firstNumber(
       rest.paddingTop,
@@ -110,7 +154,7 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
     effectiveNumberOfLines == null ? undefined : rest.ellipsizeMode ?? 'tail'
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle, strokeInsetMarginStyle]}>
       <Text
         accessible={false}
         pointerEvents="none"
@@ -119,11 +163,13 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
         style={[
           textStyle,
           {
-            paddingTop: baseTop,
-            paddingRight: baseRight,
-            paddingBottom: baseBottom,
-            paddingLeft: baseLeft,
+            paddingTop: baseTop + strokeInset,
+            paddingRight: baseRight + strokeInset,
+            paddingBottom: baseBottom + strokeInset,
+            paddingLeft: baseLeft + strokeInset,
           },
+          strokeInset === 0 ? null : ({ maxWidth: 'none' } as any),
+          strokeInset === 0 ? null : ({ boxSizing: 'content-box' } as any),
           styles.hiddenText,
         ]}
       >
@@ -160,14 +206,6 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
               } as any)
             : null,
           styles.overlay,
-          strokeInset === 0
-            ? null
-            : {
-                top: -strokeInset,
-                right: -strokeInset,
-                bottom: -strokeInset,
-                left: -strokeInset,
-              },
         ]}
       >
         {resolvedText}
