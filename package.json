@@ -1,6 +1,6 @@
 {
   "name": "@whetware/react-native-stroke-text",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Stroke/outline text for React Native (New Architecture) on iOS, Android, and Web.",
   "type": "module",
   "main": "./lib/index.js",
