@@ -197,6 +197,11 @@ export function StrokeText({
   const effectiveIncludeFontPadding =
     nativeProps.includeFontPadding ?? styleIncludeFontPadding ?? false
 
+  const wrappedHybridRef = React.useMemo(
+    () => (hybridRef ? callback(hybridRef) : undefined),
+    [hybridRef]
+  )
+
   return (
     <View style={[styles.container, containerStyle, strokeInsetMarginStyle]}>
       <Text
@@ -248,7 +253,7 @@ export function StrokeText({
         paddingRight={baseRight}
         paddingBottom={baseBottom}
         paddingLeft={baseLeft}
-        hybridRef={hybridRef ? callback(hybridRef) : undefined}
+        hybridRef={wrappedHybridRef}
         pointerEvents="none"
         style={styles.overlay}
       />

@@ -7,12 +7,12 @@ import com.facebook.react.BaseReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.uimanager.ViewManager
-import com.margelo.nitro.stroketext.views.HybridStrokeTextViewManager
+import com.margelo.nitro.stroketext.views.StrokeTextViewManager
 
 class NitroStrokeTextPackage : BaseReactPackage(), ViewManagerOnDemandReactPackage {
     private val viewManagers: Map<String, ModuleSpec> by lazy {
         mapOf(
-            "StrokeTextView" to ModuleSpec.viewManagerSpec { HybridStrokeTextViewManager() }
+            "StrokeTextView" to ModuleSpec.viewManagerSpec { StrokeTextViewManager() }
         )
     }
 

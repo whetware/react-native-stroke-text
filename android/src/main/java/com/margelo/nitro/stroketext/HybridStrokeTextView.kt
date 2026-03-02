@@ -1,11 +1,15 @@
 package com.margelo.nitro.stroketext
 
 import android.view.View
+import com.facebook.jni.HybridData
 import com.facebook.react.uimanager.ThemedReactContext
+import com.margelo.nitro.views.RecyclableView
 
-class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSpec() {
+class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSpec(), RecyclableView {
   private val strokeTextView = StrokeTextView(context)
   override val view: View = strokeTextView
+
+  private var isDisposed = false
 
   override var text: String = ""
   override var color: String? = null
@@ -33,6 +37,54 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
   override var paddingRight: Double? = null
   override var paddingBottom: Double? = null
   override var paddingLeft: Double? = null
+
+  override fun dispose() {
+    if (isDisposed) return
+    isDisposed = true
+    super.dispose()
+
+    try {
+      val hybridDataField = HybridStrokeTextViewSpec::class.java.getDeclaredField("mHybridData")
+      hybridDataField.isAccessible = true
+      val hybridData = hybridDataField.get(this) as? HybridData ?: return
+
+      val resetNativeMethod = HybridData::class.java.getDeclaredMethod("resetNative")
+      resetNativeMethod.isAccessible = true
+      resetNativeMethod.invoke(hybridData)
+    } catch (_: Throwable) {
+    }
+  }
+
+  override fun prepareForRecycle() {
+    text = ""
+    color = null
+    strokeColor = null
+    strokeWidth = null
+    fontSize = null
+    fontWeight = null
+    fontFamily = null
+    fontStyle = null
+    lineHeight = null
+    letterSpacing = null
+    textAlign = null
+    textDecorationLine = null
+    textTransform = null
+    opacity = null
+    allowFontScaling = null
+    maxFontSizeMultiplier = null
+    includeFontPadding = null
+    numberOfLines = null
+    ellipsizeMode = null
+    padding = null
+    paddingVertical = null
+    paddingHorizontal = null
+    paddingTop = null
+    paddingRight = null
+    paddingBottom = null
+    paddingLeft = null
+
+    afterUpdate()
+  }
 
   override fun afterUpdate() {
     val displayMetrics = strokeTextView.resources.displayMetrics
