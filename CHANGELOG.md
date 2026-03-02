@@ -1,5 +1,11 @@
 # @whetware/react-native-stroke-text
 
+## 0.0.4
+
+### Patch Changes
+
+- [`80ded08`](https://github.com/whetware/react-native-stroke-text/commit/80ded08eb3acf84344f56e12b24f74f771726ec1) Thanks [@evelant](https://github.com/evelant)! - Fix handles leak on Android causing crash
+
 ## 0.0.3
 
 ### Patch Changes
