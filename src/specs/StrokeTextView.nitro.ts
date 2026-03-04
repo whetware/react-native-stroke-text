@@ -5,6 +5,7 @@ import type {
 } from 'react-native-nitro-modules'
 
 export type StrokeTextAlign = 'auto' | 'left' | 'right' | 'center' | 'justify'
+export type StrokeTextAlignVertical = 'auto' | 'top' | 'bottom' | 'center'
 export type StrokeTextDecorationLine =
   | 'none'
   | 'underline'
@@ -28,6 +29,7 @@ export interface StrokeTextProps extends HybridViewProps {
   lineHeight?: number
   letterSpacing?: number
   textAlign?: StrokeTextAlign
+  textAlignVertical?: StrokeTextAlignVertical
   textDecorationLine?: StrokeTextDecorationLine
   textTransform?: StrokeTextTransform
   opacity?: number

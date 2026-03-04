@@ -15,6 +15,7 @@
     "lineHeight": true,
     "letterSpacing": true,
     "textAlign": true,
+    "textAlignVertical": true,
     "textDecorationLine": true,
     "textTransform": true,
     "opacity": true,

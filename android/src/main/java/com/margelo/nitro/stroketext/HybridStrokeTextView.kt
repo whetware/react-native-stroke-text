@@ -3,9 +3,8 @@ package com.margelo.nitro.stroketext
 import android.view.View
 import com.facebook.jni.HybridData
 import com.facebook.react.uimanager.ThemedReactContext
-import com.margelo.nitro.views.RecyclableView
 
-class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSpec(), RecyclableView {
+class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSpec() {
   private val strokeTextView = StrokeTextView(context)
   override val view: View = strokeTextView
 
@@ -22,6 +21,7 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
   override var lineHeight: Double? = null
   override var letterSpacing: Double? = null
   override var textAlign: StrokeTextAlign? = null
+  override var textAlignVertical: StrokeTextAlignVertical? = null
   override var textDecorationLine: StrokeTextDecorationLine? = null
   override var textTransform: StrokeTextTransform? = null
   override var opacity: Double? = null
@@ -53,37 +53,6 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
       resetNativeMethod.invoke(hybridData)
     } catch (_: Throwable) {
     }
-  }
-
-  override fun prepareForRecycle() {
-    text = ""
-    color = null
-    strokeColor = null
-    strokeWidth = null
-    fontSize = null
-    fontWeight = null
-    fontFamily = null
-    fontStyle = null
-    lineHeight = null
-    letterSpacing = null
-    textAlign = null
-    textDecorationLine = null
-    textTransform = null
-    opacity = null
-    allowFontScaling = null
-    maxFontSizeMultiplier = null
-    includeFontPadding = null
-    numberOfLines = null
-    ellipsizeMode = null
-    padding = null
-    paddingVertical = null
-    paddingHorizontal = null
-    paddingTop = null
-    paddingRight = null
-    paddingBottom = null
-    paddingLeft = null
-
-    afterUpdate()
   }
 
   override fun afterUpdate() {
@@ -137,10 +106,11 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
         }
 
     strokeTextView.textAlign = textAlign ?: StrokeTextAlign.AUTO
+    strokeTextView.textAlignVertical = textAlignVertical ?: StrokeTextAlignVertical.AUTO
     strokeTextView.textDecorationLine = textDecorationLine ?: StrokeTextDecorationLine.NONE
     strokeTextView.textTransform = textTransform ?: StrokeTextTransform.NONE
 
-    strokeTextView.includeFontPadding = includeFontPadding ?: false
+    strokeTextView.includeFontPadding = includeFontPadding ?: true
     strokeTextView.numberOfLines = (numberOfLines ?: 0.0).toInt()
     strokeTextView.ellipsizeMode = ellipsizeMode
 

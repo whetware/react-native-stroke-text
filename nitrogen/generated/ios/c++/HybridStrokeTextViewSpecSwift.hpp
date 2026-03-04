@@ -16,6 +16,8 @@ namespace NitroStrokeText { class HybridStrokeTextViewSpec_cxx; }
 namespace margelo::nitro::stroketext { enum class StrokeTextFontStyle; }
 // Forward declaration of `StrokeTextAlign` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
+// Forward declaration of `StrokeTextAlignVertical` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextAlignVertical; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
@@ -27,6 +29,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 #include <optional>
 #include "StrokeTextFontStyle.hpp"
 #include "StrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
 #include "StrokeTextEllipsizeMode.hpp"
@@ -153,6 +156,13 @@ namespace margelo::nitro::stroketext {
     }
     inline void setTextAlign(std::optional<StrokeTextAlign> textAlign) noexcept override {
       _swiftPart.setTextAlign(textAlign);
+    }
+    inline std::optional<StrokeTextAlignVertical> getTextAlignVertical() noexcept override {
+      auto __result = _swiftPart.getTextAlignVertical();
+      return __result;
+    }
+    inline void setTextAlignVertical(std::optional<StrokeTextAlignVertical> textAlignVertical) noexcept override {
+      _swiftPart.setTextAlignVertical(textAlignVertical);
     }
     inline std::optional<StrokeTextDecorationLine> getTextDecorationLine() noexcept override {
       auto __result = _swiftPart.getTextDecorationLine();

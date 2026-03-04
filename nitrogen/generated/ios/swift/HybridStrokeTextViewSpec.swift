@@ -22,6 +22,7 @@ public protocol HybridStrokeTextViewSpec_protocol: HybridObject, HybridView {
   var lineHeight: Double? { get set }
   var letterSpacing: Double? { get set }
   var textAlign: StrokeTextAlign? { get set }
+  var textAlignVertical: StrokeTextAlignVertical? { get set }
   var textDecorationLine: StrokeTextDecorationLine? { get set }
   var textTransform: StrokeTextTransform? { get set }
   var opacity: Double? { get set }

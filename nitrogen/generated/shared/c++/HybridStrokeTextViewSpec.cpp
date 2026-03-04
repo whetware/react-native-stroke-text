@@ -36,6 +36,8 @@ namespace margelo::nitro::stroketext {
       prototype.registerHybridSetter("letterSpacing", &HybridStrokeTextViewSpec::setLetterSpacing);
       prototype.registerHybridGetter("textAlign", &HybridStrokeTextViewSpec::getTextAlign);
       prototype.registerHybridSetter("textAlign", &HybridStrokeTextViewSpec::setTextAlign);
+      prototype.registerHybridGetter("textAlignVertical", &HybridStrokeTextViewSpec::getTextAlignVertical);
+      prototype.registerHybridSetter("textAlignVertical", &HybridStrokeTextViewSpec::setTextAlignVertical);
       prototype.registerHybridGetter("textDecorationLine", &HybridStrokeTextViewSpec::getTextDecorationLine);
       prototype.registerHybridSetter("textDecorationLine", &HybridStrokeTextViewSpec::setTextDecorationLine);
       prototype.registerHybridGetter("textTransform", &HybridStrokeTextViewSpec::getTextTransform);

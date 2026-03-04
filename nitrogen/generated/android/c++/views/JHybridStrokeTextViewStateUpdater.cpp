@@ -80,6 +80,10 @@ void JHybridStrokeTextViewStateUpdater::updateViewProps(jni::alias_ref<jni::JCla
     view->setTextAlign(props.textAlign.value);
     // TODO: Set isDirty = false
   }
+  if (props.textAlignVertical.isDirty) {
+    view->setTextAlignVertical(props.textAlignVertical.value);
+    // TODO: Set isDirty = false
+  }
   if (props.textDecorationLine.isDirty) {
     view->setTextDecorationLine(props.textDecorationLine.value);
     // TODO: Set isDirty = false

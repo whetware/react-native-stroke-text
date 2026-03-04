@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { StyleProp, TextStyle } from 'react-native'
 import type {
   StrokeTextAlign,
+  StrokeTextAlignVertical,
   StrokeTextDecorationLine,
   StrokeTextEllipsizeMode,
   StrokeTextFontStyle,
@@ -13,6 +14,7 @@ import type {
 
 export type {
   StrokeTextAlign,
+  StrokeTextAlignVertical,
   StrokeTextDecorationLine,
   StrokeTextEllipsizeMode,
   StrokeTextFontStyle,

@@ -331,6 +331,23 @@ open class HybridStrokeTextViewSpec_cxx {
     }
   }
   
+  public final var textAlignVertical: bridge.std__optional_StrokeTextAlignVertical_ {
+    @inline(__always)
+    get {
+      return { () -> bridge.std__optional_StrokeTextAlignVertical_ in
+        if let __unwrappedValue = self.__implementation.textAlignVertical {
+          return bridge.create_std__optional_StrokeTextAlignVertical_(__unwrappedValue)
+        } else {
+          return .init()
+        }
+      }()
+    }
+    @inline(__always)
+    set {
+      self.__implementation.textAlignVertical = newValue.value
+    }
+  }
+  
   public final var textDecorationLine: bridge.std__optional_StrokeTextDecorationLine_ {
     @inline(__always)
     get {

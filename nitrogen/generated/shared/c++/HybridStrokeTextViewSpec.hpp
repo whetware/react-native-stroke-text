@@ -17,6 +17,8 @@
 namespace margelo::nitro::stroketext { enum class StrokeTextFontStyle; }
 // Forward declaration of `StrokeTextAlign` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
+// Forward declaration of `StrokeTextAlignVertical` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextAlignVertical; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
@@ -28,6 +30,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 #include <optional>
 #include "StrokeTextFontStyle.hpp"
 #include "StrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
 #include "StrokeTextEllipsizeMode.hpp"
@@ -81,6 +84,8 @@ namespace margelo::nitro::stroketext {
       virtual void setLetterSpacing(std::optional<double> letterSpacing) = 0;
       virtual std::optional<StrokeTextAlign> getTextAlign() = 0;
       virtual void setTextAlign(std::optional<StrokeTextAlign> textAlign) = 0;
+      virtual std::optional<StrokeTextAlignVertical> getTextAlignVertical() = 0;
+      virtual void setTextAlignVertical(std::optional<StrokeTextAlignVertical> textAlignVertical) = 0;
       virtual std::optional<StrokeTextDecorationLine> getTextDecorationLine() = 0;
       virtual void setTextDecorationLine(std::optional<StrokeTextDecorationLine> textDecorationLine) = 0;
       virtual std::optional<StrokeTextTransform> getTextTransform() = 0;

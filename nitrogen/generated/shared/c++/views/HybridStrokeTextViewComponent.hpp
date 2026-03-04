@@ -20,6 +20,7 @@
 #include <optional>
 #include "StrokeTextFontStyle.hpp"
 #include "StrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
 #include "StrokeTextEllipsizeMode.hpp"
@@ -59,6 +60,7 @@ namespace margelo::nitro::stroketext::views {
     CachedProp<std::optional<double>> lineHeight;
     CachedProp<std::optional<double>> letterSpacing;
     CachedProp<std::optional<StrokeTextAlign>> textAlign;
+    CachedProp<std::optional<StrokeTextAlignVertical>> textAlignVertical;
     CachedProp<std::optional<StrokeTextDecorationLine>> textDecorationLine;
     CachedProp<std::optional<StrokeTextTransform>> textTransform;
     CachedProp<std::optional<double>> opacity;

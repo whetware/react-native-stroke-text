@@ -47,6 +47,17 @@ function toColorString(value: unknown): string | undefined {
   return undefined
 }
 
+type StrokeTextAlignVertical = 'auto' | 'top' | 'bottom' | 'center'
+
+function toTextAlignVertical(value: unknown): StrokeTextAlignVertical | undefined {
+  return value === 'auto' ||
+    value === 'top' ||
+    value === 'bottom' ||
+    value === 'center'
+    ? value
+    : undefined
+}
+
 function warnOnInvalidChildren(children: unknown) {
   if (!__DEV__) return
   if (children == null) return
@@ -66,7 +77,9 @@ export function StrokeText({
 }: StrokeTextProps) {
   warnOnInvalidChildren(children)
   const resolvedText = resolveText(text, children)
-  const flattened = StyleSheet.flatten(style) as TextStyle | undefined
+  const flattened = StyleSheet.flatten(style) as
+    | (TextStyle & { textAlignVertical?: unknown; verticalAlign?: unknown })
+    | undefined
 
   const {
     padding,
@@ -88,6 +101,8 @@ export function StrokeText({
     lineHeight: styleLineHeight,
     letterSpacing: styleLetterSpacing,
     textAlign: styleTextAlign,
+    textAlignVertical: styleTextAlignVertical,
+    verticalAlign: styleVerticalAlign,
     textDecorationLine: styleTextDecorationLine,
     textTransform: styleTextTransform,
     opacity: styleOpacity,
@@ -194,12 +209,69 @@ export function StrokeText({
     effectiveNumberOfLines == null
       ? undefined
       : nativeProps.ellipsizeMode ?? 'tail'
+
+  const mappedTextAlignVerticalFromVerticalAlign =
+    styleVerticalAlign === 'middle'
+      ? 'center'
+      : toTextAlignVertical(styleVerticalAlign)
+
+  const effectiveTextAlignVertical =
+    nativeProps.textAlignVertical ??
+    toTextAlignVertical(styleTextAlignVertical) ??
+    mappedTextAlignVerticalFromVerticalAlign
+
   const effectiveIncludeFontPadding =
-    nativeProps.includeFontPadding ?? styleIncludeFontPadding ?? false
+    nativeProps.includeFontPadding ?? styleIncludeFontPadding ?? true
+
+  const effectiveFontWeight =
+    nativeProps.fontWeight ?? toFontWeightString(styleFontWeight)
+  const effectiveFontSize = nativeProps.fontSize ?? toNumber(styleFontSize)
+  const effectiveFontFamily = nativeProps.fontFamily ?? styleFontFamily
+  const effectiveFontStyle = nativeProps.fontStyle ?? styleFontStyle
+  const effectiveLineHeight = nativeProps.lineHeight ?? toNumber(styleLineHeight)
+  const effectiveLetterSpacing =
+    nativeProps.letterSpacing ?? toNumber(styleLetterSpacing)
+  const effectiveTextAlign = nativeProps.textAlign ?? styleTextAlign
+  const effectiveTextDecorationLine =
+    nativeProps.textDecorationLine ?? styleTextDecorationLine
+  const effectiveTextTransform = nativeProps.textTransform ?? styleTextTransform
+  const effectiveColor = nativeProps.color ?? toColorString(styleColor)
 
   const wrappedHybridRef = React.useMemo(
     () => (hybridRef ? callback(hybridRef) : undefined),
     [hybridRef]
+  )
+
+  const measurerTextStyle = React.useMemo(
+    () =>
+      ({
+        color: effectiveColor,
+        fontSize: effectiveFontSize,
+        fontWeight: effectiveFontWeight,
+        fontFamily: effectiveFontFamily,
+        fontStyle: effectiveFontStyle,
+        lineHeight: effectiveLineHeight,
+        letterSpacing: effectiveLetterSpacing,
+        textAlign: effectiveTextAlign,
+        textAlignVertical: effectiveTextAlignVertical,
+        textDecorationLine: effectiveTextDecorationLine,
+        textTransform: effectiveTextTransform,
+        includeFontPadding: effectiveIncludeFontPadding,
+      }) as TextStyle,
+    [
+      effectiveColor,
+      effectiveFontSize,
+      effectiveFontWeight,
+      effectiveFontFamily,
+      effectiveFontStyle,
+      effectiveLineHeight,
+      effectiveLetterSpacing,
+      effectiveTextAlign,
+      effectiveTextAlignVertical,
+      effectiveTextDecorationLine,
+      effectiveTextTransform,
+      effectiveIncludeFontPadding,
+    ]
   )
 
   return (
@@ -212,16 +284,13 @@ export function StrokeText({
         allowFontScaling={nativeProps.allowFontScaling}
         maxFontSizeMultiplier={nativeProps.maxFontSizeMultiplier}
         style={[
-          style,
+          measurerTextStyle,
           {
             paddingTop: baseTop + strokeInset,
             paddingRight: baseRight + strokeInset,
             paddingBottom: baseBottom + strokeInset,
             paddingLeft: baseLeft + strokeInset,
           },
-          effectiveIncludeFontPadding == null
-            ? null
-            : { includeFontPadding: effectiveIncludeFontPadding },
           styles.hiddenText,
         ]}
       >
@@ -231,20 +300,17 @@ export function StrokeText({
       <NativeStrokeTextView
         {...nativeProps}
         text={resolvedText}
-        color={nativeProps.color ?? toColorString(styleColor)}
-        fontSize={nativeProps.fontSize ?? toNumber(styleFontSize)}
-        fontWeight={
-          nativeProps.fontWeight ?? toFontWeightString(styleFontWeight)
-        }
-        fontFamily={nativeProps.fontFamily ?? styleFontFamily}
-        fontStyle={nativeProps.fontStyle ?? styleFontStyle}
-        lineHeight={nativeProps.lineHeight ?? toNumber(styleLineHeight)}
-        letterSpacing={nativeProps.letterSpacing ?? toNumber(styleLetterSpacing)}
-        textAlign={nativeProps.textAlign ?? styleTextAlign}
-        textDecorationLine={
-          nativeProps.textDecorationLine ?? styleTextDecorationLine
-        }
-        textTransform={nativeProps.textTransform ?? styleTextTransform}
+        color={effectiveColor}
+        fontSize={effectiveFontSize}
+        fontWeight={effectiveFontWeight}
+        fontFamily={effectiveFontFamily}
+        fontStyle={effectiveFontStyle}
+        lineHeight={effectiveLineHeight}
+        letterSpacing={effectiveLetterSpacing}
+        textAlign={effectiveTextAlign}
+        textAlignVertical={effectiveTextAlignVertical}
+        textDecorationLine={effectiveTextDecorationLine}
+        textTransform={effectiveTextTransform}
         opacity={nativeProps.opacity ?? toNumber(styleOpacity)}
         includeFontPadding={effectiveIncludeFontPadding}
         numberOfLines={nativeProps.numberOfLines}
@@ -262,9 +328,7 @@ export function StrokeText({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignSelf: 'flex-start',
-  },
+  container: {},
   overlay: {
     ...StyleSheet.absoluteFillObject,
   },

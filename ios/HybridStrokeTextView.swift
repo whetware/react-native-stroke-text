@@ -17,6 +17,7 @@ final class HybridStrokeTextView: HybridStrokeTextViewSpec {
   var lineHeight: Double? = nil
   var letterSpacing: Double? = nil
   var textAlign: StrokeTextAlign? = nil
+  var textAlignVertical: StrokeTextAlignVertical? = nil
   var textDecorationLine: StrokeTextDecorationLine? = nil
   var textTransform: StrokeTextTransform? = nil
   var opacity: Double? = nil

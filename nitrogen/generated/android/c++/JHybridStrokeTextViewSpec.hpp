@@ -73,6 +73,8 @@ namespace margelo::nitro::stroketext {
     void setLetterSpacing(std::optional<double> letterSpacing) override;
     std::optional<StrokeTextAlign> getTextAlign() override;
     void setTextAlign(std::optional<StrokeTextAlign> textAlign) override;
+    std::optional<StrokeTextAlignVertical> getTextAlignVertical() override;
+    void setTextAlignVertical(std::optional<StrokeTextAlignVertical> textAlignVertical) override;
     std::optional<StrokeTextDecorationLine> getTextDecorationLine() override;
     void setTextDecorationLine(std::optional<StrokeTextDecorationLine> textDecorationLine) override;
     std::optional<StrokeTextTransform> getTextTransform() override;

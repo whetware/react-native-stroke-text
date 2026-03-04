@@ -7,12 +7,14 @@ import android.graphics.Paint.FontMetricsInt
 import android.graphics.Typeface
 import android.os.Build
 import android.text.Layout
+import android.text.TextDirectionHeuristics
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.LineHeightSpan
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.widget.TextView
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.ThemedReactContext
@@ -38,6 +40,7 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   var letterSpacingPx: Float? = null
 
   var textAlign: StrokeTextAlign = StrokeTextAlign.AUTO
+  var textAlignVertical: StrokeTextAlignVertical = StrokeTextAlignVertical.AUTO
   var textDecorationLine: StrokeTextDecorationLine = StrokeTextDecorationLine.NONE
   var textTransform: StrokeTextTransform = StrokeTextTransform.NONE
 
@@ -53,11 +56,8 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   var paddingLeftPx: Float? = null
 
   init {
-    // Default to no font padding to avoid Android's extra ascent/descent insets shifting the
-    // glyphs downward. (React Native <Text> defaults includeFontPadding=true, but most designs
-    // expect iOS/web-like top alignment.)
     gravity = Gravity.TOP or Gravity.START
-    includeFontPadding = false
+    includeFontPadding = true
   }
 
   fun invalidateTextLayout() {
@@ -113,6 +113,8 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   }
 
   private fun applyProps() {
+    val transformedText = applyTextTransform(rawText, textTransform)
+
     // Padding: apply a stroke inset so the outline stays within the view bounds.
     val inset = strokeInsetPx()
     val left = floorToInt(resolvePadding(paddingLeftPx, paddingHorizontalPx, paddingAllPx) + inset)
@@ -148,13 +150,39 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
     paint.isStrikeThruText = strike
 
     // Alignment
-    val horizontalGravity =
+    val isParagraphRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
+    val isScriptRtl =
+      transformedText.isNotEmpty() &&
+        TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(transformedText, 0, transformedText.length)
+    val swapNormalAndOpposite = isParagraphRtl != isScriptRtl
+
+    val textAlignment =
       when (textAlign) {
-        StrokeTextAlign.RIGHT -> Gravity.END
-        StrokeTextAlign.CENTER -> Gravity.CENTER_HORIZONTAL
-        else -> Gravity.START
+        StrokeTextAlign.CENTER -> Layout.Alignment.ALIGN_CENTER
+        StrokeTextAlign.RIGHT ->
+          if (swapNormalAndOpposite) Layout.Alignment.ALIGN_NORMAL
+          else Layout.Alignment.ALIGN_OPPOSITE
+        else ->
+          if (swapNormalAndOpposite) Layout.Alignment.ALIGN_OPPOSITE
+          else Layout.Alignment.ALIGN_NORMAL
       }
-    gravity = Gravity.TOP or horizontalGravity
+
+    val horizontalGravity =
+      when (textAlignment) {
+        Layout.Alignment.ALIGN_NORMAL -> if (isScriptRtl) Gravity.RIGHT else Gravity.LEFT
+        Layout.Alignment.ALIGN_OPPOSITE -> if (isScriptRtl) Gravity.LEFT else Gravity.RIGHT
+        Layout.Alignment.ALIGN_CENTER -> Gravity.CENTER_HORIZONTAL
+      }
+
+    val verticalGravity =
+      when (textAlignVertical) {
+        StrokeTextAlignVertical.BOTTOM -> Gravity.BOTTOM
+        StrokeTextAlignVertical.CENTER -> Gravity.CENTER_VERTICAL
+        StrokeTextAlignVertical.TOP,
+        StrokeTextAlignVertical.AUTO -> Gravity.TOP
+      }
+
+    gravity = verticalGravity or horizontalGravity
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       justificationMode =
@@ -181,7 +209,6 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
     setTextColor(color)
 
     // Text + transform + line height (set last so layout is created with the final paint settings).
-    val transformedText = applyTextTransform(rawText, textTransform)
     val textForLayout: CharSequence =
       if (lineHeightPx != null && !lineHeightPx!!.isNaN() && transformedText.isNotEmpty()) {
         SpannableString(transformedText).apply {

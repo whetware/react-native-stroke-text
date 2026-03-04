@@ -11,6 +11,8 @@
 namespace margelo::nitro::stroketext { enum class StrokeTextFontStyle; }
 // Forward declaration of `StrokeTextAlign` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
+// Forward declaration of `StrokeTextAlignVertical` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextAlignVertical; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextDecorationLine; }
 // Forward declaration of `StrokeTextTransform` to properly resolve imports.
@@ -24,6 +26,8 @@ namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 #include "JStrokeTextFontStyle.hpp"
 #include "StrokeTextAlign.hpp"
 #include "JStrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
+#include "JStrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "JStrokeTextDecorationLine.hpp"
 #include "StrokeTextTransform.hpp"
@@ -165,6 +169,15 @@ namespace margelo::nitro::stroketext {
   void JHybridStrokeTextViewSpec::setTextAlign(std::optional<StrokeTextAlign> textAlign) {
     static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlign> /* textAlign */)>("setTextAlign");
     method(_javaPart, textAlign.has_value() ? JStrokeTextAlign::fromCpp(textAlign.value()) : nullptr);
+  }
+  std::optional<StrokeTextAlignVertical> JHybridStrokeTextViewSpec::getTextAlignVertical() {
+    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextAlignVertical>()>("getTextAlignVertical");
+    auto __result = method(_javaPart);
+    return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
+  }
+  void JHybridStrokeTextViewSpec::setTextAlignVertical(std::optional<StrokeTextAlignVertical> textAlignVertical) {
+    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlignVertical> /* textAlignVertical */)>("setTextAlignVertical");
+    method(_javaPart, textAlignVertical.has_value() ? JStrokeTextAlignVertical::fromCpp(textAlignVertical.value()) : nullptr);
   }
   std::optional<StrokeTextDecorationLine> JHybridStrokeTextViewSpec::getTextDecorationLine() {
     static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextDecorationLine>()>("getTextDecorationLine");

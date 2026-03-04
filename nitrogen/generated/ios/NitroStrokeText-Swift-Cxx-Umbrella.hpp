@@ -10,6 +10,8 @@
 // Forward declarations of C++ defined types
 // Forward declaration of `HybridStrokeTextViewSpec` to properly resolve imports.
 namespace margelo::nitro::stroketext { class HybridStrokeTextViewSpec; }
+// Forward declaration of `StrokeTextAlignVertical` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextAlignVertical; }
 // Forward declaration of `StrokeTextAlign` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
@@ -24,6 +26,7 @@ namespace margelo::nitro::stroketext { enum class StrokeTextTransform; }
 // Include C++ defined types
 #include "HybridStrokeTextViewSpec.hpp"
 #include "StrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextEllipsizeMode.hpp"
 #include "StrokeTextFontStyle.hpp"

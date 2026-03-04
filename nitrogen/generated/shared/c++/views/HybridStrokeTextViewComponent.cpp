@@ -136,6 +136,16 @@ namespace margelo::nitro::stroketext::views {
         throw std::runtime_error(std::string("StrokeTextView.textAlign: ") + exc.what());
       }
     }()),
+    textAlignVertical([&]() -> CachedProp<std::optional<StrokeTextAlignVertical>> {
+      try {
+        const react::RawValue* rawValue = rawProps.at("textAlignVertical", nullptr, nullptr);
+        if (rawValue == nullptr) return sourceProps.textAlignVertical;
+        const auto& [runtime, value] = (std::pair<jsi::Runtime*, jsi::Value>)*rawValue;
+        return CachedProp<std::optional<StrokeTextAlignVertical>>::fromRawValue(*runtime, value, sourceProps.textAlignVertical);
+      } catch (const std::exception& exc) {
+        throw std::runtime_error(std::string("StrokeTextView.textAlignVertical: ") + exc.what());
+      }
+    }()),
     textDecorationLine([&]() -> CachedProp<std::optional<StrokeTextDecorationLine>> {
       try {
         const react::RawValue* rawValue = rawProps.at("textDecorationLine", nullptr, nullptr);
@@ -310,6 +320,7 @@ namespace margelo::nitro::stroketext::views {
     lineHeight(other.lineHeight),
     letterSpacing(other.letterSpacing),
     textAlign(other.textAlign),
+    textAlignVertical(other.textAlignVertical),
     textDecorationLine(other.textDecorationLine),
     textTransform(other.textTransform),
     opacity(other.opacity),
@@ -340,6 +351,7 @@ namespace margelo::nitro::stroketext::views {
       case hashString("lineHeight"): return true;
       case hashString("letterSpacing"): return true;
       case hashString("textAlign"): return true;
+      case hashString("textAlignVertical"): return true;
       case hashString("textDecorationLine"): return true;
       case hashString("textTransform"): return true;
       case hashString("opacity"): return true;

@@ -112,6 +112,12 @@ abstract class HybridStrokeTextViewSpec: HybridView() {
   @get:Keep
   @set:DoNotStrip
   @set:Keep
+  abstract var textAlignVertical: StrokeTextAlignVertical?
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
   abstract var textDecorationLine: StrokeTextDecorationLine?
   
   @get:DoNotStrip

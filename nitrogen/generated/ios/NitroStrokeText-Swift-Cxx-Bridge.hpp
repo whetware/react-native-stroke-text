@@ -10,6 +10,8 @@
 // Forward declarations of C++ defined types
 // Forward declaration of `HybridStrokeTextViewSpec` to properly resolve imports.
 namespace margelo::nitro::stroketext { class HybridStrokeTextViewSpec; }
+// Forward declaration of `StrokeTextAlignVertical` to properly resolve imports.
+namespace margelo::nitro::stroketext { enum class StrokeTextAlignVertical; }
 // Forward declaration of `StrokeTextAlign` to properly resolve imports.
 namespace margelo::nitro::stroketext { enum class StrokeTextAlign; }
 // Forward declaration of `StrokeTextDecorationLine` to properly resolve imports.
@@ -28,6 +30,7 @@ namespace NitroStrokeText { class HybridStrokeTextViewSpec_cxx; }
 // Include C++ defined types
 #include "HybridStrokeTextViewSpec.hpp"
 #include "StrokeTextAlign.hpp"
+#include "StrokeTextAlignVertical.hpp"
 #include "StrokeTextDecorationLine.hpp"
 #include "StrokeTextEllipsizeMode.hpp"
 #include "StrokeTextFontStyle.hpp"
@@ -99,6 +102,21 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextAlign get_std__optional_StrokeTextAlign_(const std::optional<StrokeTextAlign>& optional) noexcept {
+    return *optional;
+  }
+  
+  // pragma MARK: std::optional<StrokeTextAlignVertical>
+  /**
+   * Specialized version of `std::optional<StrokeTextAlignVertical>`.
+   */
+  using std__optional_StrokeTextAlignVertical_ = std::optional<StrokeTextAlignVertical>;
+  inline std::optional<StrokeTextAlignVertical> create_std__optional_StrokeTextAlignVertical_(const StrokeTextAlignVertical& value) noexcept {
+    return std::optional<StrokeTextAlignVertical>(value);
+  }
+  inline bool has_value_std__optional_StrokeTextAlignVertical_(const std::optional<StrokeTextAlignVertical>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline StrokeTextAlignVertical get_std__optional_StrokeTextAlignVertical_(const std::optional<StrokeTextAlignVertical>& optional) noexcept {
     return *optional;
   }
   

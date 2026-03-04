@@ -127,6 +127,11 @@ using namespace margelo::nitro::stroketext::views;
     swiftPart.setTextAlign(newViewProps.textAlign.value);
     newViewProps.textAlign.isDirty = false;
   }
+  // textAlignVertical: optional
+  if (newViewProps.textAlignVertical.isDirty) {
+    swiftPart.setTextAlignVertical(newViewProps.textAlignVertical.value);
+    newViewProps.textAlignVertical.isDirty = false;
+  }
   // textDecorationLine: optional
   if (newViewProps.textDecorationLine.isDirty) {
     swiftPart.setTextDecorationLine(newViewProps.textDecorationLine.value);
