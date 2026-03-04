@@ -1,5 +1,11 @@
 # @whetware/react-native-stroke-text
 
+## 0.0.5
+
+### Patch Changes
+
+- [`1bfd35a`](https://github.com/whetware/react-native-stroke-text/commit/1bfd35ada98c9dc39e76510c2f239bc2719eac61) Thanks [@evelant](https://github.com/evelant)! - Fix layout issues
+
 ## 0.0.4
 
 ### Patch Changes
