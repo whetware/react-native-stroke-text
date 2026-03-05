@@ -1,5 +1,5 @@
 import React from 'react'
-import { I18nManager, StyleSheet, Text, View, type TextStyle } from 'react-native'
+import { StyleSheet, Text, View, type TextStyle } from 'react-native'
 import { callback, getHostComponent } from 'react-native-nitro-modules'
 
 import StrokeTextViewConfig from '../nitrogen/generated/shared/json/StrokeTextViewConfig.json'
@@ -157,50 +157,6 @@ export function StrokeText({
       stylePadding
     ) ?? 0
 
-  const baseMarginTop =
-    firstNumber(
-      containerStyle.marginTop,
-      containerStyle.marginVertical,
-      containerStyle.margin
-    ) ?? 0
-  const baseMarginRight =
-    firstNumber(
-      containerStyle.marginRight,
-      I18nManager.isRTL ? containerStyle.marginStart : containerStyle.marginEnd,
-      containerStyle.marginHorizontal,
-      containerStyle.margin
-    ) ?? 0
-  const baseMarginBottom =
-    firstNumber(
-      containerStyle.marginBottom,
-      containerStyle.marginVertical,
-      containerStyle.margin
-    ) ?? 0
-  const baseMarginLeft =
-    firstNumber(
-      containerStyle.marginLeft,
-      I18nManager.isRTL ? containerStyle.marginEnd : containerStyle.marginStart,
-      containerStyle.marginHorizontal,
-      containerStyle.margin
-    ) ?? 0
-
-  const baseMarginStart = toNumber(containerStyle.marginStart)
-  const baseMarginEnd = toNumber(containerStyle.marginEnd)
-
-  const strokeInsetMarginStyle =
-    strokeInset === 0
-      ? null
-      : {
-          marginTop: baseMarginTop - strokeInset,
-          marginRight: baseMarginRight - strokeInset,
-          marginBottom: baseMarginBottom - strokeInset,
-          marginLeft: baseMarginLeft - strokeInset,
-          ...(baseMarginStart == null
-            ? {}
-            : { marginStart: baseMarginStart - strokeInset }),
-          ...(baseMarginEnd == null ? {} : { marginEnd: baseMarginEnd - strokeInset }),
-        }
-
   const effectiveNumberOfLines =
     nativeProps.numberOfLines != null && nativeProps.numberOfLines > 0
       ? nativeProps.numberOfLines
@@ -275,7 +231,7 @@ export function StrokeText({
   )
 
   return (
-    <View style={[styles.container, containerStyle, strokeInsetMarginStyle]}>
+    <View style={[styles.container, containerStyle]}>
       <Text
         accessible={false}
         pointerEvents="none"
@@ -286,10 +242,10 @@ export function StrokeText({
         style={[
           measurerTextStyle,
           {
-            paddingTop: baseTop + strokeInset,
-            paddingRight: baseRight + strokeInset,
-            paddingBottom: baseBottom + strokeInset,
-            paddingLeft: baseLeft + strokeInset,
+            paddingTop: baseTop,
+            paddingRight: baseRight,
+            paddingBottom: baseBottom,
+            paddingLeft: baseLeft,
           },
           styles.hiddenText,
         ]}
@@ -321,7 +277,17 @@ export function StrokeText({
         paddingLeft={baseLeft}
         hybridRef={wrappedHybridRef}
         pointerEvents="none"
-        style={styles.overlay}
+        style={[
+          styles.overlay,
+          strokeInset === 0
+            ? null
+            : {
+                top: -strokeInset,
+                right: -strokeInset,
+                bottom: -strokeInset,
+                left: -strokeInset,
+              },
+        ]}
       />
     </View>
   )
